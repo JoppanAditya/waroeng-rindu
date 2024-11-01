@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class AdminUserController extends BaseController
 {
@@ -38,7 +39,7 @@ class AdminUserController extends BaseController
                 'data' => view('dashboard/user/data',  ['users' => $users]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -52,7 +53,7 @@ class AdminUserController extends BaseController
                 'success' => view('dashboard/user/modal/edit',  ['user' => $user]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -66,61 +67,139 @@ class AdminUserController extends BaseController
                 'success' => view('dashboard/user/modal/detail',  ['user' => $user]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
     public function update()
     {
         if ($this->request->isAJAX()) {
-
             $id = $this->request->getPost('id');
+            $users = auth()->getProvider();
+            $user = $users->findById($id);
 
-            $validationResult = $this->_validate();
+            $validationRules = [
+                'id' => [
+                    'rules' => 'required',
+                ],
+                'fullname' => [
+                    'label' => 'Full Name',
+                    'rules' => [
+                        'required',
+                        'max_length[50]',
+                        'min_length[3]',
+                    ],
+                ],
+                'username' => [
+                    'label' => 'Auth.username',
+                    'rules' => [
+                        'required',
+                        'max_length[30]',
+                        'min_length[3]',
+                        'regex_match[/\A[a-zA-Z0-9\.]+\z/]',
+                        'is_unique[users.username,id,{id}]',
+                    ],
+                ],
+                'email' => [
+                    'label' => 'Auth.email',
+                    'rules' => [
+                        'required',
+                        'max_length[254]',
+                        'valid_email',
+                        'is_unique[auth_identities.secret,user_id,{id}]',
+                    ],
+                ],
+                'mobile_number' => [
+                    'label' => 'Mobile Number',
+                    'rules' => [
+                        'max_length[15]',
+                        'min_length[10]',
+                        'regex_match[/\A[0-9]+\z/]',
+                        'is_unique[users.mobile_number,id,{id}]',
+                    ],
+                ],
+                'gender' => [
+                    'label' => 'Gender',
+                    'rules' => [
+                        'required',
+                        'in_list[Male, Female]',
+                    ],
+                ],
+                'date_of_birth' => [
+                    'label' => 'Date of Birth',
+                    'rules' => [
+                        'permit_empty',
+                        'valid_date',
+                    ],
+                ],
+                'password' => [
+                    'label' => 'Auth.password',
+                    'rules' => [
+                        'permit_empty',
+                        'max_byte[72]',
+                        'strong_password[]',
+                    ],
+                    'errors' => [
+                        'max_byte' => 'Auth.errorPasswordTooLongBytes'
+                    ]
+                ]
+            ];
 
-            if ($validationResult['error']) {
+            if (!$this->validate($validationRules)) {
                 return $this->response->setJSON([
                     'error' => true,
-                    'errors' => $validationResult['errors'],
+                    'message' => 'Please correct the errors in the form.',
+                    'errors' => $this->validator->getErrors(),
                 ]);
             } else {
-                $data = [
-                    'name' => $this->request->getPost('name'),
-                    'category_id' => $this->request->getPost('category'),
-                    'description' => $this->request->getPost('description'),
-                    'price' => $this->request->getPost('price'),
-                ];
-
+                $fullname = $this->request->getPost('fullname');
+                $username = $this->request->getPost('username');
+                $email = $this->request->getPost('email');
+                $password = $this->request->getPost('password');
+                $mobile_number = $this->request->getPost('mobile_number');
+                $date_of_birth = $this->request->getPost('date_of_birth');
+                $gender = $this->request->getPost('gender');
                 $image = $this->request->getFile('image');
-
-                $existingMenu = $this->menuModel->find($id);
-                $existingImage = $existingMenu['image'];
+                $existingImage = $user->image;
 
                 if ($image->getError() == 4) {
-                    $data['image'] = $existingImage;
+                    $imageName = $existingImage;
                 } else {
                     $newName = $image->getRandomName();
+                    $image->move('assets/img/user', $newName);
 
-                    $image->move('assets/img/menu', $newName);
-
-                    if ($existingImage && $existingImage !== 'default.jpeg' && file_exists('assets/img/menu/' . $existingImage)) {
-                        unlink('assets/img/menu/' . $existingImage);
+                    if ($existingImage && $existingImage !== 'default.jpg' && file_exists('assets/img/user/' . $existingImage)) {
+                        unlink('assets/img/user/' . $existingImage);
                     }
 
-                    $data['image'] = $newName;
+                    $imageName = $newName;
                 }
 
-                if ($this->menuModel->update(['id' => $id], $data)) {
-                    redirect('admin/menu')->with('success', 'Menu successfully updated.');
-                    return $this->response->setJSON(['success' => true]);
+                $user->fill([
+                    'fullname'      => $fullname,
+                    'username'      => $username,
+                    'email'         => $email,
+                    'password'      => $password,
+                    'mobile_number' => $mobile_number,
+                    'date_of_birth' => $date_of_birth,
+                    'gender'        => $gender,
+                    'image'         => $imageName,
+                ]);
+
+                if ($users->save($user)) {
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'User has been updated successfully.'
+                    ]);
                 } else {
-                    redirect('admin/menu')->with('error', 'Failed tp update Menu.');
-                    return $this->response->setJSON(['error' => true]);
+                    return $this->response->setJSON([
+                        'error' => true,
+                        'message' => 'Failed to update user.'
+                    ]);
                 }
             }
-            echo json_encode($response);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -144,7 +223,7 @@ class AdminUserController extends BaseController
                     return $this->response->setJSON(['error' => true, 'message' => 'Failed to delete user.']);
                 }
             } else {
-                throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+                throw new PageNotFoundException('Sorry, we cannot access the requested page.');
             }
         } else {
             return $this->response->setJSON(['error' => true, 'message' => 'Failed to get user.']);

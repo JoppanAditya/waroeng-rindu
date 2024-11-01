@@ -8,7 +8,7 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'HomeController::index');
 
 $routes->group('shop', static function ($routes) {
-    $routes->match(['get', 'post'], '/', 'ShopController::index');
+    $routes->match(['GET', 'POST'], '/', 'ShopController::index');
     $routes->get('(:segment)', 'ShopController::detail/$1');
 });
 
@@ -71,7 +71,7 @@ $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function 
 
 $routes->group('transaction', static function ($routes) {
     $routes->get('/', 'TransactionController::index');
-    $routes->get('address', 'TransactionController::address');
+    $routes->get('shipping', 'TransactionController::shipping');
 });
 
 $routes->group('address', static function ($routes) {
@@ -81,6 +81,8 @@ $routes->group('address', static function ($routes) {
     $routes->post('editForm', 'AddressController::editForm');
     $routes->post('add', 'AddressController::add');
     $routes->post('update', 'AddressController::update');
+    $routes->post('updateSelected', 'AddressController::updateSelected');
+    $routes->post('updatePrimary', 'AddressController::updatePrimary');
     $routes->post('delete', 'AddressController::delete');
 });
 

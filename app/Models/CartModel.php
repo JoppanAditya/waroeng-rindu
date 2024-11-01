@@ -52,7 +52,6 @@ class CartModel extends Model
         $item = $this->where('id', $id)->first();
 
         if ($item) {
-            $quantity += $item['quantity'];
             $subtotal = $quantity * $item['price'];
             return $this->update($id, [
                 'quantity' => $quantity,

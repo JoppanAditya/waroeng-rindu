@@ -12,83 +12,68 @@
             <div class="modal-body">
                 <!-- Fullname -->
                 <div class="form-floating mb-2">
-                    <input type="text" class="form-control <?= isset(session('errors')['fullname']) ? 'is-invalid' : '' ?>" id="floatingFullnameInput" name="fullname" inputmode="text" autocomplete="fullname" placeholder="Fullname" value="<?= $user->fullname ?>">
-                    <label for="floatingFullnameInput">Fullname</label>
-                    <?php if (isset(session('errors')['fullname'])) : ?>
-                        <div class="invalid-feedback">
-                            <?= session('errors')['fullname'] ?>
-                        </div>
-                    <?php endif ?>
+                    <input type="text" class="form-control" id="fullname" name="fullname" inputmode="text" autocomplete="fullname" placeholder="Fullname" value="<?= $user->fullname; ?>">
+                    <label for="fullname">Fullname</label>
+                    <div class="invalid-feedback error-fullname"></div>
                 </div>
 
                 <!-- Username -->
                 <div class="form-floating mb-2">
-                    <input type="text" class="form-control <?= isset(session('errors')['username']) ? 'is-invalid' : '' ?>" id="floatingUsernameInput" name="username" inputmode="text" autocomplete="username" placeholder="Username" value="<?= $user->username ?>">
-                    <label for="floatingUsernameInput">Username</label>
-                    <?php if (isset(session('errors')['username'])) : ?>
-                        <div class="invalid-feedback">
-                            <?= session('errors')['username'] ?>
-                        </div>
-                    <?php endif ?>
+                    <input type="text" class="form-control" id="username" name="username" inputmode="text" autocomplete="username" placeholder="Username" value="<?= $user->username; ?>">
+                    <label for="username">Username</label>
+                    <div class="invalid-feedback error-username"></div>
                 </div>
 
                 <!-- Email -->
                 <div class="form-floating mb-2">
-                    <input type="email" class="form-control <?= isset(session('errors')['email']) ? 'is-invalid' : '' ?>" id="floatingEmailInput" name="email" inputmode="email" autocomplete="email" placeholder="Email" value="<?= $user->email ?>">
-                    <label for="floatingEmailInput">Email</label>
-                    <?php if (isset(session('errors')['email'])) : ?>
-                        <div class="invalid-feedback">
-                            <?= session('errors')['email'] ?>
-                        </div>
-                    <?php endif ?>
+                    <input type="email" class="form-control" id="email" name="email" inputmode="email" autocomplete="email" placeholder="Email" value="<?= $user->email; ?>">
+                    <label for="email">Email</label>
+                    <div class="invalid-feedback error-email"></div>
                 </div>
 
                 <!-- Mobile Number -->
                 <div class="form-floating mb-2">
-                    <input type="tel" class="form-control <?= isset(session('errors')['mobile_number']) ? 'is-invalid' : '' ?>" id="floatingMobileNumberInput" name="mobile_number" autocomplete="tel" placeholder="Mobile Number (without hyphen)" value="<?= $user->mobile_number ?>">
-                    <label for="floatingMobileNumberInput">Mobile Number (without hyphen)</label>
-                    <?php if (isset(session('errors')['mobile_number'])) : ?>
-                        <div class="invalid-feedback">
-                            <?= session('errors')['mobile_number'] ?>
-                        </div>
-                    <?php endif ?>
+                    <input type="tel" class="form-control" id="mobile_number" name="mobile_number" autocomplete="tel" placeholder="Mobile Number (without hyphen)" value="<?= $user->mobile_number; ?>">
+                    <label for="mobile_number">Mobile Number (without hyphen)</label>
+                    <div class="invalid-feedback error-mobile_number"></div>
                 </div>
 
                 <!-- Birth Date -->
                 <div class="form-floating mb-2">
-                    <input type="date" class="form-control <?= isset(session('errors')['date_of_birth']) ? 'is-invalid' : '' ?>" id="floatingBirthInput" name="date_of_birth" inputmode="text" autocomplete="date_of_birth" placeholder="Birth Date" value="<?= $user->date_of_birth ?>">
-                    <label for="floatingBirthInput">Birth Date</label>
-                    <?php if (isset(session('errors')['date_of_birth'])) : ?>
-                        <div class="invalid-feedback">
-                            <?= session('errors')['date_of_birth'] ?>
-                        </div>
-                    <?php endif ?>
+                    <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" inputmode="text" autocomplete="date_of_birth" placeholder="Birth Date" value="<?= $user->date_of_birth ?>">
+                    <label for="date_of_birth">Birth Date</label>
+                    <div class="invalid-feedback error-date_of_birth"></div>
                 </div>
 
                 <!-- Gender -->
                 <div class="form-floating mb-2">
-                    <select class="form-select <?= isset(session('errors')['gender']) ? 'is-invalid' : '' ?>" id="floatingGenderSelect" aria-label="Gender" name="gender">
+                    <select class="form-select" id="gender" aria-label="Gender" name="gender">
                         <option selected disabled>Select one</option>
                         <option value="Male" <?= $user->gender == 'Male' ? 'selected' : '' ?>>Male</option>
                         <option value="Female" <?= $user->gender == 'Female' ? 'selected' : '' ?>>Female</option>
                     </select>
-                    <label for="floatingGenderSelect">Gender</label>
-                    <?php if (isset(session('errors')['gender'])) : ?>
-                        <div class="invalid-feedback">
-                            <?= session('errors')['gender'] ?>
-                        </div>
-                    <?php endif ?>
+                    <label for="gender">Gender</label>
+                    <div class="invalid-feedback error-gender"></div>
                 </div>
 
                 <!-- Password -->
                 <div class="form-floating mb-2">
-                    <input type="password" class="form-control <?= isset(session('errors')['password']) ? 'is-invalid' : '' ?>" id="floatingPasswordInput" name="password" inputmode="text" autocomplete="new-password" placeholder="Password">
-                    <label for="floatingPasswordInput">Password</label>
-                    <?php if (isset(session('errors')['password'])) : ?>
-                        <div class="invalid-feedback">
-                            <?= session('errors')['password'] ?>
-                        </div>
-                    <?php endif ?>
+                    <input type="password" class="form-control" id="password" name="password" inputmode="text" autocomplete="new-password" placeholder="Password">
+                    <label for="password">Password</label>
+                    <div class="invalid-feedback error-password"></div>
+                </div>
+
+                <div class="col-md-12 d-flex mt-3 gap-3 align-items-start">
+                    <div>
+                        <?php if (!empty($user->image)): ?>
+                            <img src="<?= base_url('assets/img/user/' . $user->image) ?>" alt="User Image" class="img-fluid" style="max-width: 200px; height: auto;">
+                            <div class="mt-2 text-center"><?= $user->image; ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <div>
+                        <input class="form-control" type="file" id="image" name="image">
+                        <div class="invalid-feedback error-image"></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -154,7 +139,7 @@
                         });
 
                         $('#editModal').modal('hide');
-                        menuData();
+                        userData();
                     }
                 },
                 error: function(xhr, ajaxOptions, thrownError) {

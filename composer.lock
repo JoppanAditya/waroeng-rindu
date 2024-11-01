@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e791f3a1570e835f6be06a52f6aecea",
+    "content-hash": "418a37bd57a799020848fcf04de32955",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -340,41 +340,6 @@
                 "source": "https://github.com/FakerPHP/Faker/tree/v1.23.1"
             },
             "time": "2024-01-02T13:46:09+00:00"
-        },
-        {
-            "name": "jason-napolitano/codeigniter4-cart-module",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jason-napolitano/CodeIgniter4-Cart-Module.git",
-                "reference": "f696be03e715884a04e52d28f104f3f13c326d2b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jason-napolitano/CodeIgniter4-Cart-Module/zipball/f696be03e715884a04e52d28f104f3f13c326d2b",
-                "reference": "f696be03e715884a04e52d28f104f3f13c326d2b",
-                "shasum": ""
-            },
-            "require": {
-                "codeigniter4/framework": "^4.0.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CodeIgniterCart\\": "./src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "A basic port of the codeigniter 3 cart module for CodeIgniter 4.",
-            "homepage": "https://github.com/jason-napolitano/CodeIgniter4-Cart-Module",
-            "support": {
-                "issues": "https://github.com/jason-napolitano/CodeIgniter4-Cart-Module/issues",
-                "source": "https://github.com/jason-napolitano/CodeIgniter4-Cart-Module/tree/1.1.0"
-            },
-            "time": "2020-11-22T21:40:22+00:00"
         },
         {
             "name": "laminas/laminas-escaper",

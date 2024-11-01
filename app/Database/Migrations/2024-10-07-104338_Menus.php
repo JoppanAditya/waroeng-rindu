@@ -34,6 +34,10 @@ class Menus extends Migration
                 'constraint'     => '20',
                 'unsigned'       => true,
             ],
+            'weight' => [
+                'type'           => 'INT',
+                'unsigned'       => true,
+            ],
             'image' => [
                 'type'           => 'VARCHAR',
                 'constraint'     => '255',

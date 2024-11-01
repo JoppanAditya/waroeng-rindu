@@ -25,6 +25,6 @@
                 <span aria-hidden="true"><?= lang('Pager.last') ?></span>
             </a>
         <?php endif ?>
-        <!-- <a href="#" class="rounded">&raquo;</a> -->
+        <!-- <ay href="#" class="rounded">&raquo;</ay> -->
     </div>
 </div>

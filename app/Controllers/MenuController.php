@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\MenuModel;
 use App\Models\CategoryModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class MenuController extends BaseController
 {
@@ -48,7 +49,7 @@ class MenuController extends BaseController
                 'data' => view('dashboard/menu/data', $data)
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -61,7 +62,7 @@ class MenuController extends BaseController
                 'data' => view('dashboard/menu/modal/add', ['categories' => $categories])
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -80,7 +81,7 @@ class MenuController extends BaseController
                 'success' => view('dashboard/menu/modal/edit', $data),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -94,7 +95,7 @@ class MenuController extends BaseController
                 'success' => view('dashboard/menu/modal/detail', ['menu' => $menu,]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -141,7 +142,7 @@ class MenuController extends BaseController
                 }
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -193,7 +194,7 @@ class MenuController extends BaseController
                 }
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -219,7 +220,7 @@ class MenuController extends BaseController
                 return $this->response->setJSON(['error' => true, 'message' => 'Failed to get item.']);
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 

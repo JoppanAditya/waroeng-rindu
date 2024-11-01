@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Shield\Entities\User;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class AdminAdminController extends BaseController
 {
@@ -43,7 +44,7 @@ class AdminAdminController extends BaseController
                 'data' => view('dashboard/admin/data',  ['users' => $users]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -57,7 +58,7 @@ class AdminAdminController extends BaseController
                 'success' => view('dashboard/admin/modal/detail',  ['user' => $user]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -68,7 +69,7 @@ class AdminAdminController extends BaseController
                 'data' => view('dashboard/admin/modal/add'),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -82,7 +83,7 @@ class AdminAdminController extends BaseController
                 'success' => view('dashboard/admin/modal/edit',  ['user' => $user]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -142,7 +143,7 @@ class AdminAdminController extends BaseController
                 }
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -154,6 +155,9 @@ class AdminAdminController extends BaseController
             $user = $users->findById($id);
 
             $validationRules = [
+                'id' => [
+                    'rules' => 'required',
+                ],
                 'fullname' => [
                     'label' => 'Full Name',
                     'rules' => [
@@ -169,7 +173,7 @@ class AdminAdminController extends BaseController
                         'max_length[30]',
                         'min_length[3]',
                         'regex_match[/\A[a-zA-Z0-9\.]+\z/]',
-                        'is_unique[users.username,id,{$id}]',
+                        'is_unique[users.username,id,{id}]',
                     ],
                 ],
                 'email' => [
@@ -178,7 +182,7 @@ class AdminAdminController extends BaseController
                         'required',
                         'max_length[254]',
                         'valid_email',
-                        'is_unique[auth_identities.secret,id,{$id}]',
+                        'is_unique[auth_identities.secret,user_id,{id}]',
                     ],
                 ],
                 'mobile_number' => [
@@ -187,17 +191,7 @@ class AdminAdminController extends BaseController
                         'max_length[15]',
                         'min_length[10]',
                         'regex_match[/\A[0-9]+\z/]',
-                        'is_unique[users.mobile_number,id,{$id}]',
-                    ],
-                ],
-                'mobile_number' => [
-                    'label' => 'Mobile Number',
-                    'rules' => [
-                        'required',
-                        'max_length[15]',
-                        'min_length[10]',
-                        'regex_match[/\A[0-9]+\z/]',
-                        'is_unique[users.mobile_number,id,{$id}]',
+                        'is_unique[users.mobile_number,id,{id}]',
                     ],
                 ],
                 'gender' => [
@@ -207,16 +201,10 @@ class AdminAdminController extends BaseController
                         'in_list[Male, Female]',
                     ],
                 ],
-                'date_of_birth' => [
-                    'label' => 'Date of Birth',
-                    'rules' => [
-                        'permit_empty',
-                        'valid_date',
-                    ],
-                ],
                 'password' => [
                     'label' => 'Auth.password',
                     'rules' => [
+                        'permit_empty',
                         'max_byte[72]',
                         'strong_password[]',
                     ],
@@ -278,7 +266,7 @@ class AdminAdminController extends BaseController
                 }
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -302,7 +290,7 @@ class AdminAdminController extends BaseController
                     return $this->response->setJSON(['error' => true, 'message' => 'Failed to delete admin.']);
                 }
             } else {
-                throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+                throw new PageNotFoundException('Sorry, we cannot access the requested page.');
             }
         } else {
             return $this->response->setJSON(['error' => true, 'message' => 'Failed to get user.']);

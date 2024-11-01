@@ -16,7 +16,7 @@ class TransactionController extends BaseController
         }
     }
 
-    public function address()
+    public function shipping()
     {
         $addressModel = new AddressModel();
         $addresses = $addressModel->getAddressDetail(user_id());
@@ -24,6 +24,6 @@ class TransactionController extends BaseController
             'title' => 'Transaction',
             'address' => $addresses,
         ];
-        return view('transaction/address', $data);
+        return view('transaction/shipping', $data);
     }
 }

@@ -253,18 +253,15 @@
 
         const checkButtonState = () => {
             const deliverySelected = $('#deliverySelect').val();
-            const paymentSelected = $('#paymentSelect').val();
             const address = JSON.parse('<?= json_encode($address) ?>');
-
             const addressSelected = address.some(a => a.is_selected == 1);
 
-            if (deliverySelected && paymentSelected && addressSelected) {
+            if (deliverySelected && addressSelected) {
                 $('#pay-button').removeAttr('disabled');
             } else {
                 $('#pay-button').attr('disabled', 'disabled');
             }
         }
-
 
         $('#deliverySelect').change((e) => {
             const selectedValue = parseInt(e.target.value);
@@ -278,25 +275,6 @@
             $('#shoppingTotal').text('Rp' + shoppingTotal.toLocaleString('id-ID'));
             $('#deliveryFeeInput').val(deliveryFee);
             $('#shoppingTotalInput').val(shoppingTotal);
-
-            checkButtonState();
-        });
-
-        $('#paymentSelect').change((e) => {
-            const selectedValue = parseInt(e.target.value);
-            let paymentMethod = '';
-            if (selectedValue == 1) {
-                paymentMethod = 'COD';
-            } else if (selectedValue == 2) {
-                paymentMethod = 'E-Wallet';
-            } else if (selectedValue == 3) {
-                paymentMethod = 'Bank Transfer';
-            } else if (selectedValue == 4) {
-                paymentMethod = 'Credit or Debit Card';
-            }
-
-            $('#paymentMethod').text(paymentMethod);
-            $('#paymentMethodInput').val(paymentMethod);
 
             checkButtonState();
         });
@@ -348,217 +326,6 @@
                     console.error(xhr.responseText);
                     window.location.href = '<?= base_url('cart') ?>';
                 }
-            });
-        });
-
-        // Handle Add
-        $('#save-add').click((e) => {
-            e.preventDefault();
-
-            const user_id = $('#add_user_id').val();
-            const name = $('#add_user_name').val();
-            const phone = $('#add_user_phone').val();
-            const label = $('#add_address_label').val();
-            const city = $('#add_address_city').val();
-            const full_address = $('#add_address_full').val();
-            const notes = $('#add_address_notes').val();
-
-            $.ajax({
-                method: 'POST',
-                dataType: 'json',
-                url: '<?= base_url('settings/saveAddress') ?>',
-                data: {
-                    user_id: user_id,
-                    name: name,
-                    phone: phone,
-                    label: label,
-                    city: city,
-                    full_address: full_address,
-                    notes: notes
-                },
-                success: (response) => {
-                    if (response.error) {
-                        if (response.errors) {
-                            for (let field in response.errors) {
-                                if (response.errors.hasOwnProperty(field)) {
-                                    const errorElement = $(`#add-${field}-error`);
-                                    if (errorElement.length) {
-                                        errorElement.text(response.errors[field]);
-                                    } else {
-                                        console.error(`No element found for ${field}-error`);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        location.reload();
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error(xhr.responseText);
-                }
-            });
-        });
-
-        // Handle Update
-        $('#updateModal').on('show.bs.modal', (e) => {
-            const button = $(e.relatedTarget);
-            const id = button.data('id');
-
-            // Reset form values
-            $('#update_address_id').val();
-            $('#update_user_id').val();
-            $('#update_user_name').val();
-            $('#update_user_phone').val();
-            $('#update_address_label').val();
-            $('#update_address_city').val();
-            $('#update_address_full').val();
-            $('#update_address_notes').val();
-
-            $.ajax({
-                url: '<?= base_url('settings/getAddressDetail/') ?>' + id,
-                method: 'GET',
-                dataType: 'json',
-                success: (data) => {
-                    if (data) {
-                        $('#update_address_id').val(data[0].id);
-                        $('#update_user_id').val(data[0].user_id);
-                        $('#update_user_name').val(data[0].name);
-                        $('#update_user_phone').val(data[0].phone);
-                        $('#update_address_label').val(data[0].label);
-                        $('#update_address_city').val(data[0].city);
-                        $('#update_address_full').val(data[0].full_address);
-                        $('#update_address_notes').val(data[0].notes);
-                    } else {
-                        console.error('No data received');
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error fetching address details:', error);
-                }
-            });
-        });
-
-        // Handle Save Changes
-        $('#save-changes').click((e) => {
-            e.preventDefault();
-
-            const id = $('#update_address_id').val();
-            const user_id = $('#update_user_id').val();
-            const name = $('#update_user_name').val();
-            const phone = $('#update_user_phone').val();
-            const label = $('#update_address_label').val();
-            const city = $('#update_address_city').val();
-            const full_address = $('#update_address_full').val();
-            const notes = $('#update_address_notes').val();
-
-            $.ajax({
-                type: 'POST',
-                url: '<?= base_url('settings/saveAddress/') ?>' + id,
-                data: {
-                    user_id: user_id,
-                    name: name,
-                    phone: phone,
-                    label: label,
-                    city: city,
-                    full_address: full_address,
-                    notes: notes
-                },
-                success: (response) => {
-                    if (response.error) {
-                        if (response.errors) {
-                            for (let field in response.errors) {
-                                if (response.errors.hasOwnProperty(field)) {
-                                    const errorElement = $(`#update-${field}-error`);
-                                    if (errorElement.length) {
-                                        errorElement.text(response.errors[field]);
-                                    } else {
-                                        console.error(`No element found for ${field}-error`);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        location.reload();
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error(xhr.responseText);
-                }
-            });
-        });
-
-        // Handle Select
-        $('.select-button').click((e) => {
-            const button = $(e.target);
-            const cardBody = button.closest('.card-body');
-            const id = cardBody.find('.address-id').val();
-            const userId = cardBody.find('.user-id').val();
-
-            console.log('ID:', id);
-            console.log('User ID:', userId);
-
-            if (typeof id === 'undefined' || typeof userId === 'undefined') {
-                console.error('ID or user ID is undefined.');
-                return;
-            }
-
-            $.ajax({
-                url: '<?= base_url('settings/updateSelect/') ?>' + id,
-                method: 'POST',
-                data: {
-                    user_id: userId
-                },
-                success: (response) => {
-                    if (response.success) {
-                        location.reload();
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error updating selection:', error);
-                }
-            });
-        });
-
-        // Handle Primary Select
-        $('.primary-button').click((e) => {
-            const button = $(e.target);
-            const cardBody = button.closest('.card-body');
-            const id = cardBody.find('.address-id').val();
-            const userId = cardBody.find('.user-id').val();
-
-            console.log('ID:', id);
-            console.log('User ID:', userId);
-
-            if (typeof id === 'undefined' || typeof userId === 'undefined') {
-                console.error('ID or user ID is undefined.');
-                return;
-            }
-
-            $.ajax({
-                url: '<?= base_url('settings/updatePrimarySelect/') ?>' + id,
-                method: 'POST',
-                data: {
-                    user_id: userId
-                },
-                success: (response) => {
-                    if (response.success) {
-                        location.reload();
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error updating selection:', error);
-                }
-            });
-        });
-
-        // Handle Delete
-        $('#deleteModal').on('show.bs.modal', (e) => {
-            const button = $(e.relatedTarget);
-            const id = button.data('id');
-
-            $('#deleteButton').off('click').on('click', () => {
-                location.reload();
             });
         });
     });

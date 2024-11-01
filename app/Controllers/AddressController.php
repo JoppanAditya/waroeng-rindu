@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\AddressModel;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class AddressController extends BaseController
 {
@@ -24,7 +25,7 @@ class AddressController extends BaseController
                 'data' => view('address/data', ['address' => $address,]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -37,7 +38,7 @@ class AddressController extends BaseController
                 'data' => view('address/modal/dataModal', ['address' => $address])
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -56,26 +57,31 @@ class AddressController extends BaseController
                 'data' => view('address/modal/add', $data)
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
     public function editForm()
     {
         if ($this->request->isAJAX()) {
-            $id = $this->request->getPost('id');
-            $menu = $this->menuModel->find($id);
-            $categories = $this->categoryModel->get();
+            $addressId = $this->request->getPost('addressId');
+            $address = $this->addressModel->where('id', $addressId)->first();
+            $provincesData = $this->_getProvinces();
+            $provinces = $provincesData['rajaongkir']['results'];
+            $citiesData = $this->_getCities($address['province']);
+            $cities = $citiesData['rajaongkir']['results'];
+
             $data = [
-                'menu'          => $menu,
-                'categories'    => $categories,
+                'address' => $address,
+                'provinces' => $provinces,
+                'cities' => $cities,
             ];
 
             return $this->response->setJSON([
-                'success' => view('dashboard/menu/modal/edit', $data),
+                'data' => view('address/modal/edit', $data),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -125,15 +131,49 @@ class AddressController extends BaseController
                 ]);
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
     public function update()
     {
         if ($this->request->isAJAX()) {
+            $addressId = $this->request->getPost('address_id');
+
+            $validationResult = $this->_validate();
+
+            if ($validationResult['error']) {
+                return $this->response->setJSON([
+                    'error' => true,
+                    'message' => $validationResult['message'],
+                    'errors' => $validationResult['errors'],
+                ]);
+            }
+
+            $data = [
+                'name' => $this->request->getPost('fullname'),
+                'phone' => $this->request->getPost('phone'),
+                'label' => $this->request->getPost('label'),
+                'province' => $this->request->getPost('province'),
+                'city' => $this->request->getPost('city'),
+                'postal_code' => $this->request->getPost('postal_code'),
+                'full_address' => $this->request->getPost('address'),
+                'notes' => $this->request->getPost('notes')
+            ];
+
+            if ($this->addressModel->update($addressId, $data)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Address updated successfully.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'error' => true,
+                    'message' => 'Failed to update address.'
+                ]);
+            }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -155,7 +195,57 @@ class AddressController extends BaseController
                 ]);
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
+        }
+    }
+
+    public function updateSelected()
+    {
+        if ($this->request->isAJAX()) {
+            $id = $this->request->getPost('id');
+            $userId = $this->request->getPost('user_id');
+            $this->addressModel->resetSelected($userId);
+
+            $selected = $this->addressModel->setSelected($id, $userId);
+            if ($selected) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Address selected successfully.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'error' => true,
+                    'message' => 'Failed to select address.'
+                ]);
+            }
+        } else {
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
+        }
+    }
+
+    public function updatePrimary()
+    {
+        if ($this->request->isAJAX()) {
+            $id = $this->request->getPost('id');
+            $userId = $this->request->getPost('user_id');
+            $this->addressModel->resetSelected($userId);
+            $this->addressModel->setSelected($id, $userId);
+            $this->addressModel->resetPrimary($userId);
+
+            $selected = $this->addressModel->setPrimary($id, $userId);
+            if ($selected) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Selected address has been set to primary address successfully.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'error' => true,
+                    'message' => 'Failed to set selected address to primary address.'
+                ]);
+            }
+        } else {
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -181,5 +271,50 @@ class AddressController extends BaseController
         }
 
         return ['error' => false];
+    }
+
+    private function _getProvinces()
+    {
+        try {
+            $client = service('curlrequest');
+            $response = $client->request('GET', 'https://api.rajaongkir.com/starter/province', [
+                'headers' => [
+                    'key' => getenv('RAJAONGKIR_API_KEY'),
+                ],
+            ]);
+
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $parts = explode(': ', $message, 2);
+            $errorText = isset($parts[1]) ? trim($parts[1]) : '';
+
+            $errorText = preg_replace('/\s*:\s*\d+/', '', $errorText);
+            throw new PageNotFoundException($errorText);
+        }
+    }
+
+    private function _getCities($provinceId)
+    {
+        try {
+            $client = service('curlrequest');
+            $response = $client->request('GET', 'https://api.rajaongkir.com/starter/city', [
+                'headers' => [
+                    'key' => getenv('RAJAONGKIR_API_KEY'),
+                ],
+                'query' => [
+                    'province' => $provinceId,
+                ],
+            ]);
+
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $parts = explode(': ', $message, 2);
+            $errorText = isset($parts[1]) ? trim($parts[1]) : '';
+
+            $errorText = preg_replace('/\s*:\s*\d+/', '', $errorText);
+            throw new PageNotFoundException($errorText);
+        }
     }
 }

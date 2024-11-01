@@ -79,7 +79,7 @@
                             <h5 class="mb-0 ps-4 me-4">Total</h5>
                             <p class="mb-0 pe-4" id="total"><?= number_to_currency($total ?: 0, 'IDR', 'id_ID'); ?></p>
                         </div>
-                        <a href="<?= base_url('transaction/address'); ?>" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</a>
+                        <a href="<?= base_url('transaction/shipping'); ?>" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</a>
                     </div>
                 </div>
             </div>
@@ -124,62 +124,64 @@
         });
     }
 
-    // function updateCart(id, action = null) {
-    //     let inputQuantity = $('#inputValue-' + id);
-    //     let quantity = parseInt(inputQuantity.val());
-    //     let noteInput = $('#note-input-' + id).val();
-    //     let rowId = $('#rowId-' + id).val();
-    //     let price = parseFloat($('#subtotal-' + id).closest('tr').find('td[data-price]').data('price'));
+    function updateCart(id, action = null) {
+        let inputQuantity = $('#inputValue-' + id);
+        let quantity = parseInt(inputQuantity.val());
+        let noteInput = $('#note-input-' + id).val();
+        let rowId = $('#rowId-' + id).val();
+        let price = parseFloat($('#subtotal-' + id).closest('tr').find('td[data-price]').data('price'));
 
-    //     if (action === 'increment' && quantity < 5) {
-    //         quantity += 1;
-    //     } else if (action === 'decrement' && quantity > 1) {
-    //         quantity -= 1;
-    //     }
+        if (action === 'increment' && quantity < 5) {
+            quantity += 1;
+        } else if (action === 'decrement' && quantity > 1) {
+            quantity -= 1;
+        }
 
-    //     $.ajax({
-    //         url: '<?= base_url('cart/update') ?>',
-    //         type: 'POST',
-    //         data: {
-    //             id: id,
-    //             quantity: quantity,
-    //             notes: noteInput
-    //         },
-    //         success: (response) => {
-    //             if (response.success) {
-    //                 inputQuantity.val(quantity);
+        console.log(quantity);
 
-    //                 if (noteInput !== null) {
-    //                     $('#note-text-' + id).text(noteInput);
-    //                 }
+        $.ajax({
+            url: '<?= base_url('cart/update') ?>',
+            type: 'POST',
+            data: {
+                id: id,
+                quantity: quantity,
+                notes: noteInput
+            },
+            success: (response) => {
+                if (response.success) {
+                    inputQuantity.val(response.quantity);
 
-    //                 let subtotal = quantity * price;
-    //                 $('#subtotal-' + id).text(new Intl.NumberFormat('id-ID', {
-    //                     style: 'currency',
-    //                     currency: 'IDR',
-    //                     minimumFractionDigits: 0,
-    //                 }).format(subtotal));
-    //                 $('#subtotal-' + id).data('subtotal', subtotal);
+                    if (noteInput !== null) {
+                        $('#note-text-' + id).text(response.notes);
+                    }
 
-    //                 let total = 0;
-    //                 $('.subtotal').each(function() {
-    //                     total += parseFloat($(this).data('subtotal'));
-    //                 });
-    //                 $('#total').text(new Intl.NumberFormat('id-ID', {
-    //                     style: 'currency',
-    //                     currency: 'IDR',
-    //                     minimumFractionDigits: 0,
-    //                 }).format(total));
-    //             } else {
-    //                 Toast.fire({
-    //                     icon: "error",
-    //                     title: response.error
-    //                 });
-    //             }
-    //         },
-    //         error: (xhr, status, error) => {
-    //             console.error(xhr.responseText);
-    //         }
-    //     });
-    // };
+                    let subtotal = response.quantity * price;
+                    $('#subtotal-' + id).text(new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0,
+                    }).format(subtotal));
+                    $('#subtotal-' + id).data('subtotal', subtotal);
+
+                    let total = 0;
+                    $('.subtotal').each(function() {
+                        total += parseFloat($(this).data('subtotal'));
+                    });
+                    $('#total').text(new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0,
+                    }).format(total));
+                } else {
+                    Toast.fire({
+                        icon: "error",
+                        title: response.error
+                    });
+                }
+            },
+            error: (xhr, status, error) => {
+                console.error(xhr.responseText);
+            }
+        });
+    };
 </script>

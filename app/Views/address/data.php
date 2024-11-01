@@ -14,15 +14,13 @@
                 <?php if ($a['is_selected'] == 1) : ?>
                     <i class="bi bi-check-circle-fill fs-3 ms-auto ms-sm-0 text-primary"></i>
                 <?php else : ?>
-                    <button type="button" class="btn btn-primary w-100 py-2 select-button mt-2">Select</button>
-                    <input type="hidden" class="address-id" value="<?= $a['id'] ?>">
-                    <input type="hidden" class="user-id" value="<?= $a['user_id'] ?>">
+                    <button type="button" class="btn btn-primary w-100 selectButton py-2 mt-2" data-address-id="<?= $a['id'] ?>" data-user-id="<?= $a['user_id'] ?>">Select</button>
                 <?php endif; ?>
             </div>
             <div class="d-inline-flex mt-2 align-items-end">
-                <button type="button" class="btn btn-link text-decoration-none border-0 p-0 pe-3 d-none d-sm-block" style="font-size: 14px;" data-id="<?= $a['id'] ?>" data-bs-toggle="modal" data-bs-target="#updateModal">Edit Address</button>
+                <button type="button" class="btn btn-link text-decoration-none border-0 p-0 pe-3 d-none d-sm-block updateButton" data-address-id="<?= $a['id'] ?>" style="font-size: 14px;">Edit Address</button>
 
-                <button type="button" class="btn btn-light w-100 py-2 text-decoration-none d-sm-none" style="font-size: 14px;" data-id="<?= $a['id'] ?>" data-bs-toggle="modal" data-bs-target="#updateModal">Edit Address</button>
+                <button type="button" class="btn btn-light w-100 py-2 text-decoration-none d-sm-none updateButton" data-address-id="<?= $a['id'] ?>" style="font-size: 14px;">Edit Address</button>
 
                 <?php if ($a['is_selected'] == 0 && $a['is_default'] == 0) : ?>
                     <button class="btn btn-light ms-2 d-sm-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#option-<?= $a['id'] ?>" aria-controls="option-<?= $a['id'] ?>"><i class="fas fa-ellipsis-v"></i></button>
@@ -33,14 +31,12 @@
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
                         <div class="offcanvas-body d-flex flex-column gap-3 align-items-start small">
-                            <button type="button" class="btn btn-link text-decoration-none border-0 p-0 primary-button d-sm-none" style="font-size: 14px;">Make it Primary Address & Select</button>
+                            <button type="button" class="btn btn-link text-decoration-none border-0 p-0 primaryButton d-sm-none" data-address-id="<?= $a['id'] ?>" data-user-id="<?= $a['user_id'] ?>" style="font-size: 14px;">Make it Primary Address & Select</button>
                             <button type="button" onclick="remove(<?= $a['id'] ?>)" class="btn btn-link text-decoration-none border-0 p-0 d-sm-none" style="font-size: 14px;">Delete</button>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-link text-decoration-none border-0 border-start p-0 px-3 primary-button d-none d-sm-block" style="font-size: 14px;">Make it Primary Address & Select</button>
-                    <input type="hidden" class="address-id" value="<?= $a['id'] ?>">
-                    <input type="hidden" class="user-id" value="<?= $a['user_id'] ?>">
+                    <button type="button" class="btn btn-link text-decoration-none border-0 border-start p-0 px-3 primaryButton d-none d-sm-block" data-address-id="<?= $a['id'] ?>" data-user-id="<?= $a['user_id'] ?>" style="font-size: 14px;">Make it Primary Address & Select</button>
                     <button type="button" onclick="remove(<?= $a['id'] ?>)" class="btn btn-link text-decoration-none border-0 border-start p-0 ps-3 d-none d-sm-block" style="font-size: 14px;">Delete</button>
                 <?php elseif ($a['is_selected'] == 1 && $a['is_default'] == 0) : ?>
                     <button class="btn btn-light ms-2 d-sm-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#option-<?= $a['id'] ?>" aria-controls="option-<?= $a['id'] ?>"><i class="fas fa-ellipsis-v"></i></button>
@@ -51,13 +47,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
                         <div class="offcanvas-body small">
-                            <button type="button" class="btn btn-link text-decoration-none border-0 p-0 primary-button d-sm-none" style="font-size: 14px;">Make it Primary Address</button>
+                            <button type="button" class="btn btn-link text-decoration-none border-0 p-0 primaryButton d-sm-none" data-address-id="<?= $a['id'] ?>" data-user-id="<?= $a['user_id'] ?>" style="font-size: 14px;">Make it Primary Address</button>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-link text-decoration-none border-0 border-start p-0 px-3 primary-button d-none d-sm-block" style="font-size: 14px;">Make it Primary Address</button>
-                    <input type="hidden" class="address-id" value="<?= $a['id'] ?>">
-                    <input type="hidden" class="user-id" value="<?= $a['user_id'] ?>">
+                    <button type="button" class="btn btn-link text-decoration-none border-0 border-start p-0 px-3 primaryButton d-none d-sm-block" data-address-id="<?= $a['id'] ?>" data-user-id="<?= $a['user_id'] ?>" style="font-size: 14px;">Make it Primary Address</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -110,4 +104,93 @@
             }
         });
     };
+
+    $(document).ready(function() {
+        $('.updateButton').click(function(e) {
+            e.preventDefault();
+            const addressId = $(this).data('address-id');
+
+            $.ajax({
+                url: '<?= base_url('address/editForm') ?>',
+                method: 'POST',
+                data: {
+                    addressId: addressId
+                },
+                dataType: 'json',
+                success: function(response) {
+                    $('#addressModal').modal('hide');
+                    $('.viewModal').html(response.data).show();
+                    $('#updateModal').modal('show');
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                }
+            });
+        });
+
+        $('.selectButton').click(function(e) {
+            e.preventDefault();
+            const id = $(this).data('address-id');
+            const userId = $(this).data('user-id');
+
+            if (typeof id === 'undefined' || typeof userId === 'undefined') {
+                console.error('ID or user ID is undefined.');
+                return;
+            }
+
+            $.ajax({
+                url: '<?= base_url('address/updateSelected') ?>',
+                method: 'POST',
+                data: {
+                    id: id,
+                    user_id: userId
+                },
+                success: (response) => {
+                    if (response.success) {
+                        addressData();
+                    } else {
+                        Toast.fire({
+                            icon: "error",
+                            title: response.message
+                        });
+                    }
+                },
+                error: (xhr, status, error) => {
+                    console.error('Error updating selection:', error);
+                }
+            });
+        });
+
+        $('.primaryButton').click(function(e) {
+            e.preventDefault();
+            const id = $(this).data('address-id');
+            const userId = $(this).data('user-id');
+
+            if (typeof id === 'undefined' || typeof userId === 'undefined') {
+                console.error('ID or user ID is undefined.');
+                return;
+            }
+
+            $.ajax({
+                url: '<?= base_url('address/updatePrimary') ?>',
+                method: 'POST',
+                data: {
+                    user_id: userId
+                },
+                success: (response) => {
+                    if (response.success) {
+                        addressData();
+                    } else {
+                        Toast.fire({
+                            icon: "error",
+                            title: response.message
+                        });
+                    }
+                },
+                error: (xhr, status, error) => {
+                    console.error('Error updating selection:', error);
+                }
+            });
+        });
+    });
 </script>

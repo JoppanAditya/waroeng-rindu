@@ -80,15 +80,4 @@ class ShopController extends BaseController
 
         return view('shop/detail', $data);
     }
-
-    // public function addCart()
-    // {
-    //     $data = $this->request->getPost();
-
-    //     if ($this->cartModel->save($data)) {
-    //         return redirect()->back()->with('message', 'Product added to cart successfully')->with('status', 'success');
-    //     } else {
-    //         return redirect()->back()->with('message', $this->cartModel->errors())->with('status', 'error')->withInput();
-    //     }
-    // }
 }

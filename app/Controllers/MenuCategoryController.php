@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\CategoryModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class MenuCategoryController extends BaseController
 {
@@ -40,7 +41,7 @@ class MenuCategoryController extends BaseController
                 'data' => view('dashboard/category/data', ['category' => $category]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -51,7 +52,7 @@ class MenuCategoryController extends BaseController
                 'data' => view('dashboard/category/modal/add'),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -65,7 +66,7 @@ class MenuCategoryController extends BaseController
                 'success' => view('dashboard/category/modal/edit',  ['category' => $category]),
             ]);
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -92,7 +93,7 @@ class MenuCategoryController extends BaseController
                 }
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -122,7 +123,7 @@ class MenuCategoryController extends BaseController
                 }
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 
@@ -137,7 +138,7 @@ class MenuCategoryController extends BaseController
                 return $this->response->setJSON(['error' => true, 'message' => 'Failed to delete category.']);
             }
         } else {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Sorry, we cannot access the requested page.');
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
     }
 

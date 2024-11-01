@@ -31,4 +31,34 @@ class AddressModel extends Model
 
         return $addresses;
     }
+
+    public function resetSelected($userId)
+    {
+        $this->set('is_selected', 0)
+            ->where('user_id', $userId)
+            ->update();
+    }
+
+    public function setSelected($id, $userId)
+    {
+        return $this->set('is_selected', 1)
+            ->where('id', $id)
+            ->where('user_id', $userId)
+            ->update();
+    }
+
+    public function resetPrimary($userId)
+    {
+        $this->set('is_default', 0)
+            ->where('user_id', $userId)
+            ->update();
+    }
+
+    public function setPrimary($id, $userId)
+    {
+        return $this->set('is_default', 1)
+            ->where('id', $id)
+            ->where('user_id', $userId)
+            ->update();
+    }
 }
