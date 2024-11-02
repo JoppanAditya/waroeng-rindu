@@ -147,7 +147,7 @@
                 },
                 success: (response) => {
                     if (response.success) {
-                        addressData();
+                        location.reload();
                     } else {
                         Toast.fire({
                             icon: "error",
@@ -175,6 +175,7 @@
                 url: '<?= base_url('address/updatePrimary') ?>',
                 method: 'POST',
                 data: {
+                    id: id,
                     user_id: userId
                 },
                 success: (response) => {

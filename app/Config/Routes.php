@@ -72,6 +72,9 @@ $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function 
 $routes->group('transaction', static function ($routes) {
     $routes->get('/', 'TransactionController::index');
     $routes->get('shipping', 'TransactionController::shipping');
+    $routes->get('payment-method', 'TransactionController::paymentMethod');
+    $routes->post('payment', 'TransactionController::payment');
+    $routes->post('save', 'TransactionController::save');
 });
 
 $routes->group('address', static function ($routes) {
@@ -89,7 +92,7 @@ $routes->group('address', static function ($routes) {
 $routes->group('shipment', static function ($routes) {
     $routes->get('province', 'RajaOngkir::province');
     $routes->get('city', 'RajaOngkir::city');
-    $routes->get('cost', 'RajaOngkir::cost');
+    $routes->post('cost', 'RajaOngkir::cost');
 });
 
 service('auth')->routes($routes);

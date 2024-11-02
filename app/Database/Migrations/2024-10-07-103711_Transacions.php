@@ -10,34 +10,46 @@ class Transacions extends Migration
     {
         $this->forge->addField([
             'id' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
-                'auto_increment' => true,
+                'type'       => 'VARCHAR',
+                'constraint' => '50',
             ],
             'user_id' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
+                'type'      => 'INT',
+                'unsigned'  => true,
             ],
             'address_id' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
+                'type'      => 'INT',
+                'unsigned'  => true,
             ],
-            'total_price' => [
-                'type'           => 'INT',
-                'constraint'     => '20',
-                'unsigned'       => true,
+            'courier' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '5',
             ],
-            'status' => [
-                'type'           => 'INT',
-                'constraint'     => '1',
-                'unsigned'       => true,
-            ],
-            'invoice' => [
+            'courier_service' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '20',
             ],
+            'delivery_fee' => [
+                'type'      => 'FLOAT',
+                'unsigned'  => true,
+            ],
+            'total_price' => [
+                'type'      => 'FLOAT',
+                'unsigned'  => true,
+            ],
+            'token' => [
+                'type' => 'TEXT',
+            ],
+            'status' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
+            ],
+            'invoice' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '50',
+            ],
             'created_at' => [
-                'type'  => 'DATETIME',
+                'type' => 'DATETIME',
             ],
         ]);
         $this->forge->addKey('id', true);

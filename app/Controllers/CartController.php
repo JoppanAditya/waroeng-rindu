@@ -102,7 +102,7 @@ class CartController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getPost('id');
-            $deleted = $this->cartModel->removeCartItem($id);
+            $deleted = $this->cartModel->deleteCart(user_id(), $id);
 
             if ($deleted) {
                 return $this->response->setJSON(['success' => 'Menu removed from cart']);

@@ -14,6 +14,7 @@
         "codeigniter4/framework": "^4.0",
         "codeigniter4/shield": "^1.1",
         "fakerphp/faker": "^1.23",
+        "midtrans/midtrans-php": "^2.6",
         "nesbot/carbon": "^3.8"
     },
     "require-dev": {

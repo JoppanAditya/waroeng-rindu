@@ -23,7 +23,6 @@ class RajaOngkir extends BaseController
                 'key' => $api_key
             ],
             'verify' => false,
-            'query' => []
         ];
     }
 
@@ -87,6 +86,42 @@ class RajaOngkir extends BaseController
         }
     }
 
+    public function cost()
+    {
+        $origin = 152;
+        $destination = $this->request->getPost('destination');
+        $weight = $this->request->getPost('weight');
+        $courier = $this->request->getPost('courier');
+
+        $url = $this->url . 'cost';
+        $this->options['headers'] = [
+            'key' => getenv('RAJAONGKIR_API_KEY'),
+            'content-type' => 'application/x-www-form-urlencoded'
+        ];
+        $this->options['form_params'] = [
+            'origin' => $origin,
+            'destination' => $destination,
+            'weight' => $weight,
+            'courier' => $courier
+        ];
+
+        $response = $this->client->request('POST', $url, $this->options);
+        $result = json_decode($response->getBody(), true);
+        $services = $result['rajaongkir']['results'][0]['costs'];
+
+        if ($result && isset($services)) {
+            return $this->response->setJSON([
+                'success' => true,
+                'services' => $services
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'error' => true,
+                'message' => 'Unable to fetch service.'
+            ]);
+        }
+    }
+
     public function getProvinceName($provinceId)
     {
         try {
@@ -114,7 +149,10 @@ class RajaOngkir extends BaseController
             $response = $this->client->request('GET', $url, $this->options);
 
             $result = json_decode($response->getBody(), true);
-            return $result['rajaongkir']['results']['city_name'] ?? 'Unknown City';
+            $cityName = $result['rajaongkir']['results']['city_name'] ?? 'Unknown City';
+            $cityType = $result['rajaongkir']['results']['type'] ?? '';
+
+            return trim("$cityType $cityName");
         } catch (\Exception $e) {
             $message = $e->getMessage();
             $parts = explode(': ', $message, 2);

@@ -112,7 +112,7 @@
                                 $('#city').append(
                                     $('<option>', {
                                         value: city.city_id,
-                                        text: city.city_name,
+                                        text: city.type + ' ' + city.city_name,
                                         'data-postal-code': city.postal_code
                                     })
                                 );

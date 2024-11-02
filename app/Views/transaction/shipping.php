@@ -1,6 +1,10 @@
 <?= $this->extend('layout/template'); ?>
 
 <?= $this->section('content'); ?>
+<script type="text/javascript"
+    src="https://app.sandbox.midtrans.com/snap/snap.js"
+    data-client-key="<?= getenv('MIDTRANS_CLIENT_KEY'); ?>"></script>
+
 <!-- Navbar Start -->
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container">
@@ -12,6 +16,7 @@
 <!-- Navbar End -->
 
 <main>
+    <div id="snap-container"></div>
     <div class="container my-4">
         <div class="row">
             <h2 class="mb-4">Delivery</h2>
@@ -22,11 +27,10 @@
                             <h4 class="fs-5 text-secondary">Delivery Address</h4>
                             <?php if (!empty($address)) : ?>
                                 <?php foreach ($address as $a) : ?>
+                                    <input type="hidden" id="destination" value="<?= $a['city']; ?>">
+                                    <input type="hidden" id="user_id" value="<?= $a['user_id']; ?>">
+                                    <input type="hidden" id="address_id" value="<?= $a['id']; ?>">
                                     <?php if ($a['is_selected'] == 1) : ?>
-                                        <form method="post">
-                                            <input type="hidden" id="user_id" value="<?= $a['user_id'] ?>">
-                                            <input type="hidden" id="address_id" value="<?= $a['id'] ?>">
-                                        </form>
                                         <div class="d-flex gap-2 align-items-center mb-2">
                                             <i class="fas fa-map-marker-alt" style="color: #3468c0;"></i>
                                             <p class="mb-0 fw-medium">
@@ -38,9 +42,9 @@
                                         <p>
                                             <?= $a['full_address']; ?>
                                             <?= $a['notes'] ? ' (' . $a['notes'] . '), ' : ''; ?>
-                                            <?= $a['city_name'] . ', ' . $a['province_name'] . ', ' . $a['phone']; ?>
+                                            <?= $a['city_name'] . ', ' . $a['province_name'] . ' ' . $a['postal_code'] . ', ' . $a['phone']; ?>
                                         </p>
-                                        <button type="button" class="btn btn-outline-secondary dataButton">Change Address</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm dataButton">Change Address</button>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -61,14 +65,18 @@
                                 $serviceFee = 1000;
                                 $shoppingTotal = 0;
                                 foreach (session('cart') as $index => $c) : ?>
-                                    <form method="post">
-                                        <input type="hidden" name="items[<?= $index ?>][id]" value="<?= $c['id'] ?>">
-                                        <input type="hidden" name="items[<?= $index ?>][price]" value="<?= $c['price'] ?>">
-                                        <input type="hidden" name="items[<?= $index ?>][quantity]" value="<?= $c['quantity'] ?>">
-                                        <input type="hidden" name="items[<?= $index ?>][name]" value="<?= $c['name'] ?>">
-                                    </form>
-                                    <li class="list-group-item border-0 rounded-4">
-                                        <div class="dropdown-item d-flex justify-content-between text-reset text-decoration-none">
+                                    <?php $totalWeight = 0;
+                                    $weight = $c['weight'] * $c['quantity'];
+                                    $totalWeight += $weight; ?>
+                                    <input type="hidden" id="weight" value="<?= $totalWeight; ?>">
+                                    <input type="hidden" name="items[<?= $index ?>][id]" value="<?= $c['id'] ?>">
+                                    <input type="hidden" name="items[<?= $index ?>][price]" value="<?= $c['price'] ?>">
+                                    <input type="hidden" name="items[<?= $index ?>][quantity]" value="<?= $c['quantity'] ?>">
+                                    <input type="hidden" name="items[<?= $index ?>][name]" value="<?= $c['name'] ?>">
+                                    <input type="hidden" name="items[<?= $index ?>][notes]" value="<?= $c['notes'] ?>">
+
+                                    <li class="list-group-item border-0 rounded-4 p-0">
+                                        <div class="dropdown-item d-flex justify-content-between text-reset text-decoration-none p-0">
                                             <div class="d-flex align-items-start gap-3">
                                                 <div>
                                                     <img src="<?= base_url('assets/img/menu/') . $c['image'] ?>" alt="Menu Image" class="rounded" width="75" height="75">
@@ -85,20 +93,15 @@
                                     <?php $totalPrice += $c['subtotal'] ?>
                                 <?php endforeach; ?>
 
-                                <select class="form-select my-2" aria-label="Delivery select" id="deliverySelect">
-                                    <option selected disabled>Select Delivery</option>
-                                    <option value="50000">Instant 3 hours</option>
-                                    <option value="30000">Same Day 8 hours</option>
-                                    <option value="20500">Next Day</option>
-                                    <option value="11500">Regular</option>
+                                <select class="form-select my-2" aria-label="Courier select" id="courierSelect">
+                                    <option selected disabled>Select Courier</option>
+                                    <option value="jne">JNE</option>
+                                    <option value="pos">POS</option>
+                                    <option value="tiki">TIKI</option>
                                 </select>
 
-                                <select class="form-select mt-2" aria-label="Payment select" id="paymentSelect">
-                                    <option selected disabled>Select Payment Method</option>
-                                    <option value="1">COD</option>
-                                    <option value="2">E-Wallet</option>
-                                    <option value="3">Bank Transfer</option>
-                                    <option value="4">Credit or Debit Card</option>
+                                <select class="form-select mt-2" aria-label="Sercive select" id="serviceSelect">
+                                    <option selected disabled>Select Service</option>
                                 </select>
                             </ul>
                         </div>
@@ -121,10 +124,6 @@
                             <p class="card-text text-muted mb-0">App Services Fee</p>
                             <p class="mb-0" id="serviceFee">-</p>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <p class="card-text text-muted mb-0">Payment Method</p>
-                            <p class="mb-0" id="paymentMethod">-</p>
-                        </div>
                         <hr>
                         <div class="d-flex justify-content-between">
                             <p class="card-text mb-0">Shopping Total</p>
@@ -132,13 +131,11 @@
                         </div>
                         <hr>
 
-                        <form id="transactionForm" enctype="multipart/form-data" method="post">
-                            <input type="hidden" name="serviceFee" id="serviceFeeInput" value="<?= $serviceFee ?>">
-                            <input type="hidden" name="deliveryFee" id="deliveryFeeInput">
-                            <input type="hidden" name="shoppingTotal" id="shoppingTotalInput">
-                            <input type="hidden" name="paymentMethod" id="paymentMethodInput">
-                            <button type="submit" class="btn btn-primary w-100 py-2" id="pay-button">Pay</button>
-                        </form>
+                        <input type="hidden" name="courier">
+                        <input type="hidden" name="courierService">
+                        <input type="hidden" name="deliveryFee">
+                        <input type="hidden" name="shoppingTotal">
+                        <button type="button" class="btn btn-primary w-100 py-2" id="pay-button">Select Payment</button>
                     </div>
                 </div>
             </div>
@@ -213,7 +210,7 @@
                 },
                 complete: function() {
                     $('.addButton').removeAttr('disabled', 'disabled');
-                    $('.addButton').html('Add Menu');
+                    $('.addButton').html('<i class="fas fa-plus me-1"></i>Add New Address');
                 },
                 success: function(response) {
                     $('.viewModal').html(response.data).show();
@@ -252,79 +249,178 @@
         $('#pay-button').attr('disabled', 'disabled');
 
         const checkButtonState = () => {
-            const deliverySelected = $('#deliverySelect').val();
+            const courierSelected = $('#courierSelect').val();
+            const serviceSelected = $('#serviceSelect').val();
             const address = JSON.parse('<?= json_encode($address) ?>');
             const addressSelected = address.some(a => a.is_selected == 1);
 
-            if (deliverySelected && addressSelected) {
+            if (courierSelected && serviceSelected && addressSelected) {
                 $('#pay-button').removeAttr('disabled');
             } else {
                 $('#pay-button').attr('disabled', 'disabled');
             }
         }
 
-        $('#deliverySelect').change((e) => {
-            const selectedValue = parseInt(e.target.value);
-            const deliveryFee = selectedValue;
+        $('#courierSelect').change(function() {
+            const courier = $(this).val();
+            $('input[name=courier]').val(courier);
+            const destination = $('#destination').val();
+            const weight = $('#weight').val();
+
+            $.ajax({
+                url: '<?= base_url('shipment/cost') ?>',
+                type: 'POST',
+                data: {
+                    destination,
+                    weight,
+                    courier
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#serviceSelect').empty().append('<option selected disabled>Select Service</option>');
+                        response.services.forEach(service => {
+                            const etdValue = service.cost[0].etd;
+                            const match = etdValue.match(/(\d+)(?:-(\d+))?/);
+                            let estimatedDelivery;
+                            if (match) {
+                                const startEtd = parseInt(match[1]);
+                                const endEtd = match[2] ? parseInt(match[2]) : startEtd;
+
+                                if (startEtd === 0 || startEtd === 1) {
+                                    estimatedDelivery = "(arrives today)";
+                                } else if (startEtd === endEtd) {
+                                    estimatedDelivery = `(estimated ${startEtd} day)`;
+                                } else {
+                                    estimatedDelivery = `(estimated ${startEtd}-${endEtd} days)`;
+                                }
+                            } else {
+                                estimatedDelivery = "";
+                            }
+
+                            $('#serviceSelect').append(
+                                `<option value="${service.cost[0].value}" data-service="${service.service}">${service.service} - ${service.description} ${estimatedDelivery}</option>`
+                            );
+                        });
+                    } else {
+                        $('#serviceSelect').empty().append('<option disabled>No services available</option>');
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'No shipment services available.'
+                        });
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                }
+            });
+        });
+
+        $('#serviceSelect').change(function(e) {
+            const deliveryFee = parseInt($(this).val());
             const totalPrice = <?= $totalPrice ?>;
             const serviceFee = <?= $serviceFee ?>;
             const shoppingTotal = totalPrice + deliveryFee + serviceFee;
+            $('input[name=courierService]').val($(this).find(":selected").data('service'));
 
             $('#deliveryFee').text('Rp' + deliveryFee.toLocaleString('id-ID'));
             $('#serviceFee').text('Rp' + serviceFee.toLocaleString('id-ID'));
             $('#shoppingTotal').text('Rp' + shoppingTotal.toLocaleString('id-ID'));
-            $('#deliveryFeeInput').val(deliveryFee);
-            $('#shoppingTotalInput').val(shoppingTotal);
+            $('input[name=deliveryFee]').val(deliveryFee);
+            $('input[name=shoppingTotal]').val(shoppingTotal);
 
             checkButtonState();
         });
 
-        $('#pay-button').click((e) => {
+        $('#pay-button').click(function(e) {
             e.preventDefault();
-            const deliveryFee = $('#deliveryFeeInput').val();
-            const serviceFee = $('#serviceFeeInput').val();
-            const shoppingTotal = $('#shoppingTotalInput').val();
-            const user_id = $('#user_id').val();
-            const address_id = $('#address_id').val();
-            const paymentMethod = $('#paymentMethodInput').val();
+            const userId = $('#user_id').val();
+            const addressId = $('#address_id').val();
+            const courier = $('input[name=courier]').val();
+            const courierService = $('input[name=courierService]').val();
+            const deliveryFee = $('input[name=deliveryFee]').val();
+            const shoppingTotal = $('input[name=shoppingTotal]').val();
 
             const items = [];
             $('input[name^="items"]').each(function() {
                 const name = $(this).attr('name');
                 const value = $(this).val();
                 const nameParts = name.match(/items\[(\d+)\]\[(\w+)\]/);
-                const index = nameParts[1];
-                const key = nameParts[2];
 
-                if (!items[index]) {
-                    items[index] = {};
+                if (nameParts) {
+                    const index = nameParts[1];
+                    const key = nameParts[2];
+
+                    if (!items[index]) {
+                        items[index] = {};
+                    }
+                    items[index][key] = value;
                 }
-                items[index][key] = value;
             });
 
             $.ajax({
+                url: '<?= base_url('transaction/payment') ?>',
                 method: 'POST',
                 dataType: 'json',
-                url: '<?= base_url('cart/payment') ?>',
                 data: {
+                    courier: courier,
+                    courierService: courierService,
                     deliveryFee: deliveryFee,
-                    serviceFee: serviceFee,
                     shoppingTotal: shoppingTotal,
-                    user_id: user_id,
-                    address_id: address_id,
-                    paymentMethod: paymentMethod,
+                    userId: userId,
+                    addressId: addressId,
                     items: items
                 },
+                beforeSend: function() {
+                    $('.pay-button').attr('disabled', 'disabled');
+                    $('.pay-button').html('<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span role="status">Loading...</span>');
+                },
+                complete: function() {
+                    $('.pay-button').removeAttr('disabled', 'disabled');
+                    $('.pay-button').html('<i class="fas fa-plus me-1"></i>Select Payment');
+                },
                 success: (response) => {
-                    if (response.status === "success") {
-                        window.location.href = '<?= base_url('shop') ?>';
+                    if (response.success) {
+                        window.snap.pay(`${response.snapToken}`, {
+                            onSuccess: function(result) {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Payment success'
+                                });
+                                console.log(result);
+                            },
+                            onPending: function(result) {
+                                Toast.fire({
+                                    icon: 'info',
+                                    title: 'Waiting your payment!'
+                                });
+                                console.log(result);
+                            },
+                            onError: function(result) {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Payment failed'
+                                });
+                                console.log(result);
+                            },
+                            onClose: function() {
+                                Swal.fire({
+                                    title: "Warning",
+                                    text: "You closed the popup without finishing the payment",
+                                    icon: "warning"
+                                });
+                                window.location.href = response.url;
+                            }
+                        });
                     } else {
-                        window.location.href = '<?= base_url('cart') ?>';
+                        Toast.fire({
+                            icon: "error",
+                            title: response.message
+                        });
                     }
                 },
-                error: (xhr, status, error) => {
-                    console.error(xhr.responseText);
-                    window.location.href = '<?= base_url('cart') ?>';
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
                 }
             });
         });

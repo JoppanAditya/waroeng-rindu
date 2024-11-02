@@ -44,7 +44,7 @@
                         <?php foreach ($cities as $city): ?>
                             <option value="<?= esc($city['city_id']) ?>"
                                 <?= $city['city_id'] == $address['city'] ? 'selected' : '' ?>>
-                                <?= esc($city['city_name']) ?>
+                                <?= esc($city['type']) . ' ' . esc($city['city_name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -92,7 +92,7 @@
                                 $('#city').append(
                                     $('<option>', {
                                         value: city.city_id,
-                                        text: city.city_name,
+                                        text: city.type + ' ' + city.city_name,
                                         'data-postal-code': city.postal_code
                                     })
                                 );

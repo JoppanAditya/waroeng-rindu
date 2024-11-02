@@ -119,7 +119,6 @@ class AddressController extends BaseController
             ];
 
             if ($this->addressModel->insert($data)) {
-                // return redirect()->back()->with('success', 'Address added successfully.');
                 return $this->response->setJSON([
                     'success' => true,
                     'message' => 'Address added successfully.'

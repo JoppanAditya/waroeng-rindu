@@ -13,7 +13,7 @@ class CartModel extends Model
 
     public function getCartItems($userId)
     {
-        return $this->select('cart.*, menus.slug, menus.image, menus.name')
+        return $this->select('cart.*, menus.slug, menus.image, menus.name, menus.weight')
             ->join('menus', 'menus.id = cart.menu_id')
             ->where('cart.user_id', $userId)
             ->findAll();
@@ -61,8 +61,12 @@ class CartModel extends Model
         }
     }
 
-    public function removeCartItem($id)
+    public function deleteCart($userId, $menuId = null)
     {
-        return $this->delete($id);
+        if ($menuId !== null) {
+            $this->where('menu_id', $menuId);
+        }
+        $this->where('user_id', $userId)
+            ->delete();
     }
 }

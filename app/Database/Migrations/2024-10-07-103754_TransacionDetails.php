@@ -9,28 +9,38 @@ class TransacionDetails extends Migration
     public function up()
     {
         $this->forge->addField([
-            'transaction_id' => [
+            'id' => [
                 'type'           => 'INT',
                 'unsigned'       => true,
+                'auto_increment' => true,
+            ],
+            'transaction_id' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '50',
             ],
             'menu_id' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
+                'type'      => 'INT',
+                'unsigned'  => true,
             ],
             'menu_name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '128',
             ],
             'menu_price' => [
-                'type'           => 'INT',
-                'constraint'     => '20',
-                'unsigned'       => true,
+                'type'      => 'FLOAT',
+                'unsigned'  => true,
             ],
             'quantity' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
+                'type'      => 'INT',
+                'unsigned'  => true,
+            ],
+            'notes' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '45',
+                'null'       => true,
             ],
         ]);
+        $this->forge->addKey('id', true);
         $this->forge->createTable('transaction_details');
     }
 
