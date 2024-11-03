@@ -44,4 +44,38 @@ class HomeController extends BaseController
 
         return view('contact', $data);
     }
+
+    public function contactSend()
+    {
+        $validationRules = [
+            'name' => 'required|min_length[3]|max_length[50]',
+            'email' => 'required|valid_email',
+            'message' => 'required|min_length[10]'
+        ];
+
+        if (!$this->validate($validationRules)) {
+            return redirect()->back()->with('errors', $this->validator->getErrors());
+        }
+
+        $name = $this->request->getPost('name');
+        $email = $this->request->getPost('email');
+        $message = $this->request->getPost('message');
+
+        $emailService = \Config\Services::email();
+        $emailService->setFrom($email, $name);
+        $emailService->setTo('info@waroengrindu.swmenteng.com');
+        $emailService->setSubject('New Contact Form Submission');
+
+        $emailContent = "
+            <p>{$message}</p>
+        ";
+        $emailService->setMessage($emailContent);
+        $emailService->setMailType('html');
+
+        if ($emailService->send()) {
+            return redirect()->back()->with('success', 'Your message has been sent successfully!');
+        } else {
+            return redirect()->back()->with('error', 'ailed to send your message. Please try again later.');
+        }
+    }
 }

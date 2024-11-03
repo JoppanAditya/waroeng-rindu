@@ -8,7 +8,8 @@ use App\Models\CartModel;
 use App\Models\TransactionDetailModel;
 use App\Models\TransactionModel;
 use CodeIgniter\HTTP\ResponseInterface;
-use Midtrans\Config;
+use Midtrans;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 class TransactionController extends BaseController
 {
@@ -44,34 +45,34 @@ class TransactionController extends BaseController
     public function payment()
     {
         helper('text');
-        Config::$serverKey = getenv('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = false;
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
+        $date = date("Ymd");
+        $randomNumber = rand(1, 9999);
 
-        $input = [
-            'id' => random_string('alnum', 20),
+        $data = [
             'user_id' => $this->request->getPost('userId'),
             'address_id' => $this->request->getPost('addressId'),
             'courier' => $this->request->getPost('courier'),
             'courier_service' => $this->request->getPost('courierService'),
             'delivery_fee' => $this->request->getPost('deliveryFee'),
             'total_price' => $this->request->getPost('shoppingTotal'),
-            'status' => 'Pending Payment'
         ];
-
-        $users = auth()->getProvider();
-        $user = $users->findById($input['user_id']);
+        $data['invoice'] = 'INV/' . $date . '/' . $randomNumber;
         $items = $this->request->getPost('items');
 
-        $date = date("Ymd");
-        $randomNumber = rand(1, 9999);
-        $input['invoice'] = 'INV/' . $date . '/' . $randomNumber;
+        $users = auth()->getProvider();
+        $user = $users->findById($data['user_id']);
+        $addresses = $this->addressModel->getAddressDetail(user_id());
+
+        Midtrans\Config::$serverKey = getenv('MIDTRANS_SERVER_KEY');
+        Midtrans\Config::$isProduction = false;
+        Midtrans\Config::$isSanitized = true;
+        Midtrans\Config::$is3ds = true;
+        $id = random_string('alnum', 20);
 
         $params = [
             'transaction_details' => [
-                'order_id' => $input['id'],
-                'gross_amount' => $input['total_price'],
+                'order_id' => $id,
+                'gross_amount' => $data['total_price'],
             ],
             'customer_details' => [
                 'first_name' => $user->fullname,
@@ -89,7 +90,7 @@ class TransactionController extends BaseController
         }
         $params['item_details'][] = [
             'id' => 'F01',
-            'price' => $input['delivery_fee'],
+            'price' => $data['delivery_fee'],
             'quantity' => 1,
             'name' => 'Delivery Fee'
         ];
@@ -100,34 +101,53 @@ class TransactionController extends BaseController
             'name' => 'Service Fee'
         ];
 
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
-        $input['token'] = $snapToken;
+        $snapToken = Midtrans\Snap::getSnapToken($params);
 
-        $added = $this->transactionModel->add($input);
-        $detailAdded = $this->transactionDetailModel->add($items, $input['id']);
-
-        $cartModel = new CartModel();
-
-        if ($added && $detailAdded) {
-            $cartModel->deleteCart($input['user_id']);
+        if ($snapToken) {
             return $this->response->setJSON([
                 'success' => true,
                 'snapToken' => $snapToken,
-                'url' => base_url()
+                'transactionData' => $data,
+                'transactionItems' => $items,
             ]);
         } else {
-            return $this->response->setJSON(['error' => true, 'message' => 'Unable to add transaction data.']);
+            return $this->response->setJSON(['error' => 'Payment Error']);
         }
     }
 
-    public function paymentMethod()
+    public function save()
     {
-        $transaction = $this->transactionModel->get(user_id());
-        $token = $transaction['token'];
-        $data = [
-            'title' => 'Transaction',
-            'token' => $token,
-        ];
-        return view('transaction/payment', $data);
+        if ($this->request->isAJAX()) {
+            $data = $this->request->getPost('transactionData');
+            $data['id'] = $this->request->getPost('transactionId');
+            $data['payment_method'] = $this->request->getPost('paymentType');
+            $items = $this->request->getPost('transactionItems');
+            $status = $this->request->getPost('transactionStatus');
+
+            if ($status == 'capture' || $status == 'settlement') {
+                $data['status'] = 'Awaiting Confirmation';
+            } elseif ($status == 'pending') {
+                $data['status'] = 'Pending Payment';
+            } else {
+                $data['status'] = 'Payment Failed';
+            }
+
+            $added = $this->transactionModel->add($data);
+            $detailAdded = $this->transactionDetailModel->add($items, $data['id']);
+            $cartModel = new CartModel();
+
+            if ($added && $detailAdded) {
+                if ($status == 'capture' || $status == 'settlement' || $status == 'pending') {
+                    $cartModel->deleteCart($data['user_id']);
+                    return $this->response->setJSON(['success' => true]);
+                } else {
+                    return $this->response->setJSON(['error' => 'Sorry, we had an issue confirming your payment']);
+                }
+            } else {
+                return $this->response->setJSON(['error' => 'Unable to save transaction details.']);
+            }
+        } else {
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
+        }
     }
 }

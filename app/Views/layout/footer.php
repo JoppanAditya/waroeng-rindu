@@ -4,7 +4,7 @@
         <div class="pb-4 mb-4" style="border-bottom: 1px solid rgba(226, 175, 24, 0.5) ;">
             <div class="row g-4">
                 <div class="col-lg-3">
-                    <a href="#">
+                    <a href="<?= base_url(); ?>">
                         <h1 class="text-primary mb-0">Waroeng Rindu</h1>
                     </a>
                 </div>
@@ -37,7 +37,7 @@
                 <div class="d-flex flex-column text-start footer-item">
                     <h4 class="text-light mb-3">Shop Info</h4>
                     <a class="btn-link" href="">About Us</a>
-                    <a class="btn-link" href="">Contact Us</a>
+                    <a class="btn-link" href="<?= base_url('contact'); ?>">Contact Us</a>
                     <a class="btn-link" href="">Privacy Policy</a>
                     <a class="btn-link" href="">Terms & Condition</a>
                     <a class="btn-link" href="">Return Policy</a>
@@ -47,22 +47,18 @@
             <div class="col-lg-3 col-md-6">
                 <div class="d-flex flex-column text-start footer-item">
                     <h4 class="text-light mb-3">Account</h4>
-                    <a class="btn-link" href="">My Account</a>
-                    <a class="btn-link" href="">Shop details</a>
-                    <a class="btn-link" href="">Shopping Cart</a>
-                    <a class="btn-link" href="">Wishlist</a>
-                    <a class="btn-link" href="">Order History</a>
-                    <a class="btn-link" href="">International Orders</a>
+                    <a class="btn-link" href="<?= base_url('settings'); ?>">My Account</a>
+                    <a class="btn-link" href="<?= base_url('cart'); ?>">Shopping Cart</a>
+                    <a class="btn-link" href="<?= base_url('wishlist'); ?>">Wishlist</a>
+                    <a class="btn-link" href="<?= base_url('order-list'); ?>">Order History</a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="footer-item">
                     <h4 class="text-light mb-3">Contact</h4>
-                    <p>Address: 1429 Netus Rd, NY 48247</p>
-                    <p>Email: Example@gmail.com</p>
-                    <p>Phone: +0123 4567 8910</p>
-                    <p>Payment Accepted</p>
-                    <img src="<?= base_url('assets/'); ?>img/payment.png" class="img-fluid" alt="">
+                    <p>Address: Menteng, DKI Jakarta</p>
+                    <p>Email: info@waroengrindu.swmenteng.com</p>
+                    <p>Phone: (021) 234 5678</p>
                 </div>
             </div>
         </div>
@@ -75,12 +71,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                <span class="text-light"><a href="<?= base_url(); ?>" class="text-secondary border-bottom"><i class="fas fa-copyright text-light me-2"></i>Waroeng Rindu</a>, All right reserved.</span>
+                <span class="text-light"><i class="fas fa-copyright text-light me-2"></i><?= date("Y"); ?> <a href="<?= base_url(); ?>" class="text-secondary border-bottom">Waroeng Rindu</a>, All right reserved.</span>
             </div>
             <div class="col-md-6 my-auto text-center text-md-end text-white">
-                <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
-                <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
-                <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
                 Designed By <a class="border-bottom text-secondary" href="https://htmlcodex.com">HTML Codex</a> Distributed By <a class="border-bottom text-secondary" href="https://themewagon.com">ThemeWagon</a>
             </div>
         </div>

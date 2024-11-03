@@ -12,7 +12,7 @@ class TransactionModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id', 'user_id', 'address_id', 'courier', 'courier_service', 'delivery_fee', 'total_price', 'status', 'token', 'invoice'];
+    protected $allowedFields    = ['id', 'user_id', 'address_id', 'courier', 'courier_service', 'delivery_fee', 'total_price', 'payment_method', 'status', 'invoice'];
 
     protected bool $allowEmptyInserts = true;
 
@@ -20,6 +20,7 @@ class TransactionModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
 
     public function get($userId)
     {

@@ -37,12 +37,13 @@ class Transacions extends Migration
                 'type'      => 'FLOAT',
                 'unsigned'  => true,
             ],
-            'token' => [
-                'type' => 'TEXT',
+            'payment_method' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
             ],
             'status' => [
                 'type'       => 'VARCHAR',
-                'constraint' => '20',
+                'constraint' => '30',
             ],
             'invoice' => [
                 'type'       => 'VARCHAR',
@@ -50,6 +51,10 @@ class Transacions extends Migration
             ],
             'created_at' => [
                 'type' => 'DATETIME',
+            ],
+            'updated_at' => [
+                'type' => 'DATETIME',
+                'null' => true
             ],
         ]);
         $this->forge->addKey('id', true);

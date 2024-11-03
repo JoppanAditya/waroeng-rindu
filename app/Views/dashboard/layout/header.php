@@ -3,7 +3,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
         <a href="<?= base_url('admin/dashboard'); ?>" class="logo d-flex align-items-center">
-            <span class="d-none d-lg-block">Waroeng Rindu</span>
+            <img src="<?= base_url('assets/img/logo.png'); ?>" alt="Logo Waroeng Rindu" height="50">
+            <span>Admin</span>
         </a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->

@@ -6,21 +6,55 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'HomeController::index');
+$routes->get('/contact', 'HomeController::contact');
+$routes->post('/contact/send', 'HomeController::contactSend');
 
 $routes->group('shop', static function ($routes) {
     $routes->match(['GET', 'POST'], '/', 'ShopController::index');
     $routes->get('(:segment)', 'ShopController::detail/$1');
 });
 
-$routes->get('/contact', 'HomeController::contact');
-
 $routes->group('cart', static function ($routes) {
     $routes->get('/', 'CartController::index');
     $routes->get('get', 'CartController::get');
-    // $routes->get('getTotalItems', 'CartController::getCartTotal');
     $routes->post('add', 'CartController::add');
     $routes->post('update', 'CartController::update');
     $routes->post('remove', 'CartController::remove');
+});
+
+$routes->group('transaction', static function ($routes) {
+    $routes->get('/', 'TransactionController::index');
+    $routes->get('shipping', 'TransactionController::shipping');
+    $routes->post('payment', 'TransactionController::payment');
+    $routes->post('save', 'TransactionController::save');
+});
+
+$routes->group('address', static function ($routes) {
+    $routes->get('get', 'AddressController::get');
+    $routes->get('dataModal', 'AddressController::dataModal');
+    $routes->get('addForm', 'AddressController::addForm');
+    $routes->post('editForm', 'AddressController::editForm');
+    $routes->post('add', 'AddressController::add');
+    $routes->post('update', 'AddressController::update');
+    $routes->post('updateSelected', 'AddressController::updateSelected');
+    $routes->post('updatePrimary', 'AddressController::updatePrimary');
+    $routes->post('delete', 'AddressController::delete');
+});
+
+$routes->group('shipment', static function ($routes) {
+    $routes->get('province', 'RajaOngkir::province');
+    $routes->get('city', 'RajaOngkir::city');
+    $routes->post('cost', 'RajaOngkir::cost');
+});
+
+$routes->get('/order-list', 'SettingController::orderList');
+$routes->get('/wishlist', 'SettingController::wishlist');
+$routes->post('/addWishlist', 'SettingController::addWishlist');
+$routes->post('/deleteWishlist', 'SettingController::deleteWishlist');
+$routes->group('settings', static function ($routes) {
+    $routes->get('/', 'SettingController::index');
+    $routes->get('address', 'SettingController::address');
+    $routes->get('security', 'SettingController::security');
 });
 
 $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function ($routes) {
@@ -67,32 +101,6 @@ $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function 
         $routes->post('delete', 'AdminUserController::delete');
         $routes->post('detail', 'AdminUserController::detail');
     });
-});
-
-$routes->group('transaction', static function ($routes) {
-    $routes->get('/', 'TransactionController::index');
-    $routes->get('shipping', 'TransactionController::shipping');
-    $routes->get('payment-method', 'TransactionController::paymentMethod');
-    $routes->post('payment', 'TransactionController::payment');
-    $routes->post('save', 'TransactionController::save');
-});
-
-$routes->group('address', static function ($routes) {
-    $routes->get('get', 'AddressController::get');
-    $routes->get('dataModal', 'AddressController::dataModal');
-    $routes->get('addForm', 'AddressController::addForm');
-    $routes->post('editForm', 'AddressController::editForm');
-    $routes->post('add', 'AddressController::add');
-    $routes->post('update', 'AddressController::update');
-    $routes->post('updateSelected', 'AddressController::updateSelected');
-    $routes->post('updatePrimary', 'AddressController::updatePrimary');
-    $routes->post('delete', 'AddressController::delete');
-});
-
-$routes->group('shipment', static function ($routes) {
-    $routes->get('province', 'RajaOngkir::province');
-    $routes->get('city', 'RajaOngkir::city');
-    $routes->post('cost', 'RajaOngkir::cost');
 });
 
 service('auth')->routes($routes);

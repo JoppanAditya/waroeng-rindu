@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
+    <link href="<?= base_url('assets/'); ?>img/favicon.png" rel="icon">
     <title><?= $title != 'Home' ? $title . ' | ' : ''; ?>Waroeng Rindu</title>
     <meta content="" name="keywords">
     <meta content="" name="description">

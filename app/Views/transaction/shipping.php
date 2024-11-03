@@ -198,6 +198,9 @@
     }
 
     $(document).ready(function() {
+        $('#pay-button').attr('disabled', 'disabled');
+        $('#serviceSelect').attr('disabled', 'disabled');
+
         $('.addButton').click(function(e) {
             e.preventDefault();
 
@@ -246,8 +249,6 @@
             });
         });
 
-        $('#pay-button').attr('disabled', 'disabled');
-
         const checkButtonState = () => {
             const courierSelected = $('#courierSelect').val();
             const serviceSelected = $('#serviceSelect').val();
@@ -278,6 +279,7 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
+                        $('#serviceSelect').removeAttr('disabled', 'disabled');
                         $('#serviceSelect').empty().append('<option selected disabled>Select Service</option>');
                         response.services.forEach(service => {
                             const etdValue = service.cost[0].etd;
@@ -375,47 +377,111 @@
                     $('.pay-button').attr('disabled', 'disabled');
                     $('.pay-button').html('<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span role="status">Loading...</span>');
                 },
-                complete: function() {
-                    $('.pay-button').removeAttr('disabled', 'disabled');
-                    $('.pay-button').html('<i class="fas fa-plus me-1"></i>Select Payment');
-                },
                 success: (response) => {
                     if (response.success) {
-                        window.snap.pay(`${response.snapToken}`, {
+                        window.snap.pay(response.snapToken, {
                             onSuccess: function(result) {
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Payment success'
+                                $.ajax({
+                                    url: '<?= base_url('transaction/save') ?>',
+                                    type: 'POST',
+                                    data: {
+                                        transactionId: result.order_id,
+                                        paymentType: result.payment_type,
+                                        transactionStatus: result.transaction_status,
+                                        transactionData: response.transactionData,
+                                        transactionItems: response.transactionItems
+                                    },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        if (response.success) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Payment Success',
+                                                text: 'Your payment has been confirmed successfully and your order has been placed',
+                                            }).then((result) => {
+                                                window.location.href = '<?= base_url('order-list') ?>'
+                                            });
+                                        } else {
+                                            Toast.fire({
+                                                icon: "error",
+                                                title: response.error
+                                            }).then((result) => {
+                                                window.location.href = '<?= base_url('cart') ?>'
+                                            });
+                                        }
+                                    }
                                 });
-                                console.log(result);
                             },
                             onPending: function(result) {
-                                Toast.fire({
-                                    icon: 'info',
-                                    title: 'Waiting your payment!'
+                                $.ajax({
+                                    url: '<?= base_url('transaction/save') ?>',
+                                    type: 'POST',
+                                    data: {
+                                        transactionId: result.order_id,
+                                        paymentType: result.payment_type,
+                                        transactionStatus: result.transaction_status,
+                                        transactionData: response.transactionData,
+                                        transactionItems: response.transactionItems
+                                    },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        if (response.success) {
+                                            window.location.href = '<?= base_url('order-list') ?>'
+                                        } else {
+                                            Toast.fire({
+                                                icon: "error",
+                                                title: response.error
+                                            }).then((result) => {
+                                                window.location.href = '<?= base_url('cart') ?>'
+                                            });
+                                        }
+                                    }
                                 });
-                                console.log(result);
                             },
                             onError: function(result) {
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: 'Payment failed'
+                                $.ajax({
+                                    url: '<?= base_url('transaction/save') ?>',
+                                    type: 'POST',
+                                    data: {
+                                        transactionId: result.order_id,
+                                        paymentType: result.payment_type,
+                                        transactionStatus: result.transaction_status,
+                                        transactionData: response.transactionData,
+                                        transactionItems: response.transactionItems
+                                    },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        if (response.success) {
+                                            window.location.href = '<?= base_url('order-list') ?>'
+                                        } else {
+                                            Toast.fire({
+                                                icon: 'error',
+                                                title: 'Payment Error',
+                                                text: response.error
+                                            }).then(() => {
+                                                window.location.href = '<?= base_url('cart') ?>'
+                                            });
+                                        }
+                                    }
                                 });
-                                console.log(result);
                             },
                             onClose: function() {
                                 Swal.fire({
                                     title: "Warning",
                                     text: "You closed the popup without finishing the payment",
                                     icon: "warning"
+                                }).then((result) => {
+                                    window.location.href = '<?= base_url('order-list') ?>';
                                 });
-                                window.location.href = response.url;
                             }
                         });
                     } else {
                         Toast.fire({
                             icon: "error",
-                            title: response.message
+                            title: response.error,
+                            text: 'Your payment has failed due to some technical error. Please try again'
+                        }).then(() => {
+                            location.reload();
                         });
                     }
                 },

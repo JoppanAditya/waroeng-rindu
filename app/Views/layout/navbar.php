@@ -17,7 +17,7 @@
     <div class="container px-0">
         <nav class="navbar navbar-light bg-white navbar-expand-xl">
             <a href="<?= base_url(); ?>" class="navbar-brand">
-                <img src="<?= base_url('assets/img/logo.svg'); ?>" alt="Logo Waroeng Rindu" height="120">
+                <img src="<?= base_url('assets/img/logo.png'); ?>" alt="Logo Waroeng Rindu" height="70">
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars text-primary"></span>
