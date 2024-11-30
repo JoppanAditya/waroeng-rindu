@@ -17,6 +17,7 @@ $routes->group('shop', static function ($routes) {
 $routes->group('cart', static function ($routes) {
     $routes->get('/', 'CartController::index');
     $routes->get('get', 'CartController::get');
+    $routes->get('getFavorite', 'CartController::getFavorite');
     $routes->post('add', 'CartController::add');
     $routes->post('update', 'CartController::update');
     $routes->post('remove', 'CartController::remove');
@@ -48,12 +49,12 @@ $routes->group('shipment', static function ($routes) {
 });
 
 $routes->get('/order-list', 'SettingController::orderList');
-$routes->get('/wishlist', 'SettingController::wishlist');
-$routes->post('/addWishlist', 'SettingController::addWishlist');
-$routes->post('/deleteWishlist', 'SettingController::deleteWishlist');
+$routes->get('/payment-list', 'SettingController::paymentList');
+$routes->get('/favorite', 'SettingController::favorite');
 $routes->group('settings', static function ($routes) {
     $routes->get('/', 'SettingController::index');
     $routes->get('address', 'SettingController::address');
+    $routes->get('getAddress', 'SettingController::getAddress');
     $routes->get('security', 'SettingController::security');
 });
 
@@ -89,6 +90,7 @@ $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function 
         $routes->post('add', 'AdminAdminController::add');
         $routes->post('editForm', 'AdminAdminController::editForm');
         $routes->post('update', 'AdminAdminController::update');
+        $routes->post('updatePassword', 'AdminAdminController::updatePassword');
         $routes->post('delete', 'AdminAdminController::delete');
         $routes->post('detail', 'AdminAdminController::detail');
     });
@@ -100,6 +102,16 @@ $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function 
         $routes->post('update', 'AdminUserController::update');
         $routes->post('delete', 'AdminUserController::delete');
         $routes->post('detail', 'AdminUserController::detail');
+    });
+
+    $routes->group('transaction', static function ($routes) {
+        $routes->get('/', 'AdminTransactionController::index');
+        $routes->get('get', 'AdminTransactionController::get');
+        $routes->post('getDetail', 'AdminTransactionController::getDetail');
+        $routes->post('editForm', 'AdminTransactionController::editForm');
+        $routes->post('update', 'AdminTransactionController::update');
+        $routes->post('delete', 'AdminTransactionController::delete');
+        $routes->get('detail/(:segment)', 'AdminTransactionController::detail/$1');
     });
 });
 

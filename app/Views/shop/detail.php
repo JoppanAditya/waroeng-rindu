@@ -7,6 +7,7 @@
     <ol class="breadcrumb justify-content-center mb-0">
         <li class="breadcrumb-item"><a href="<?= base_url(); ?>">Home</a></li>
         <li class="breadcrumb-item"><a href="<?= base_url('shop'); ?>">Shop</a></li>
+        <li class="breadcrumb-item"><a href="<?= base_url('shop?mc=') . $menu['category_id']; ?>"><?= $menu['category_name']; ?></a></li>
         <li class="breadcrumb-item active text-white"><?= $menu['name']; ?></li>
     </ol>
 </div>
@@ -43,7 +44,7 @@
                         <h4 class="my-4 fw-bold">User Reviews</h4>
                         <?php foreach ($comment as $c): ?>
                             <div class="d-flex w-100">
-                                <img src="<?= base_url('assets/img/user/') . $c['image']; ?>" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px; margin-left: -1rem;" alt="<?= $c['fullname'] . '\'s profile picture'; ?>">
+                                <img src="<?= base_url('assets/img/user/') . $c['image']; ?>" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px; margin-left: -1rem;" alt="profile picture">
                                 <div class="w-100">
                                     <p class="mb-2" style="font-size: 14px;"><?= date('d M Y | H:i', strtotime($c['created_at'])); ?></p>
                                     <div class="d-flex justify-content-between">
@@ -131,20 +132,26 @@
                         </div>
                         <?php if (!auth()->loggedIn()) : ?>
                             <a type="button" href="<?= base_url('login') ?>" class="btn btn-primary w-100 py-2"><i class="fas fa-cart-plus me-2"></i>Add To Cart</a>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <a type="button" href="<?= base_url('login') ?>" class="btn border-0 fw-normal"><i class="fas fa-heart me-2"></i>Favorite</a>
+                                &VerticalLine;
+                                <button type="button" class="btn border-0 fw-normal"><i class="fas fa-share-alt me-2"></i>Share</button>
+                            </div>
                         <?php else : ?>
-                            <input type="hidden" name="menu_id" value="<?= $menu['id'] ?>">
-                            <input type="hidden" name="user_id" value="<?= user_id() ?>">
-                            <input type="hidden" name="menu_name" value="<?= $menu['name'] ?>">
-                            <input type="hidden" name="price" value="<?= $menu['price'] ?>">
-                            <input type="hidden" name="image" value="<?= $menu['image'] ?>">
-                            <input type="hidden" name="slug" value="<?= $menu['slug'] ?>">
+                            <input type="hidden" name="type" value="Shopping">
+                            <input type="hidden" id="menu_id" name="menu_id" value="<?= $menu['id'] ?>">
+                            <input type="hidden" id="user_id" name="user_id" value="<?= user_id() ?>">
+                            <input type="hidden" id="menu_name" name="menu_name" value="<?= $menu['name'] ?>">
+                            <input type="hidden" id="price" name="price" value="<?= $menu['price'] ?>">
                             <button type="submit" class="btn btn-primary w-100 py-2 addButton"><i class="fas fa-cart-plus me-2"></i>Add To Cart</button>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <button type="button" class="btn border-0 fw-normal addFavorite <?= $favorite ? 'text-danger' : ''; ?>">
+                                    <i class="fas fa-heart me-2"></i>Favorite
+                                </button>
+                                &VerticalLine;
+                                <button type="button" class="btn border-0 fw-normal"><i class="fas fa-share-alt me-2"></i>Share</button>
+                            </div>
                         <?php endif; ?>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <button type="button" class="btn border-0"><i class="fas fa-heart me-2"></i>Add To Wishlist</button>
-                            &VerticalLine;
-                            <button type="button" class="btn border-0"><i class="fas fa-share-alt me-2"></i>Share</button>
-                        </div>
                         <?= form_close(); ?>
                     </div>
                 </div>
@@ -175,7 +182,9 @@
     </div>
 </div>
 <!-- Single Product End -->
+<?= $this->endSection(); ?>
 
+<?= $this->section('scripts'); ?>
 <script>
     const unitPrice = <?= $menu['price']; ?>;
 
@@ -196,24 +205,12 @@
         subtotalElement.textContent = 'Rp' + subtotal.toLocaleString('id-ID');
     }
 
-    const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
-
     $('.addCartForm').submit(function(e) {
         e.preventDefault();
         const formData = $(this).serialize();
 
         $.ajax({
-            url: '<?= base_url('cart/addItem') ?>',
+            url: '<?= base_url('cart/add') ?>',
             type: 'POST',
             data: formData,
             dataType: 'json',
@@ -224,12 +221,46 @@
                         title: response.success
                     });
 
-                    // Update cart total in navbar
-                    $('#cartTotal').text('IDR ' + new Intl.NumberFormat('id-ID').format(response.cartTotal));
+                    const base_url = "<?= base_url(); ?>";
+                    const cartItems = response.cart ?? 0;
+                    let cartDropdownHtml = '';
+
+                    if (cartItems.length > 0) {
+                        cartItems.forEach(item => {
+                            const price_formatted = new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                            }).format(item.price);
+
+                            cartDropdownHtml += `
+                                <li>
+                                    <a href="${base_url}/shop/${item.slug}" class="dropdown-item d-flex justify-content-between text-reset text-decoration-none">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <img src="${base_url}/assets/img/menu/${item.image}" alt="${item.name}" class="rounded img-thumbnail" width="56" height="56">
+                                            <p class="d-inline-block text-wrap text-decoration-none fw-medium" style="max-width: 250px;">${item.name}</p>
+                                        </div>
+                                        <p class="fw-semibold"><span>${item.quantity}</span> &times; ${price_formatted}</p>
+                                    </a>
+                                </li>`;
+                        });
+                    } else {
+                        cartDropdownHtml = `
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-3">
+                                <img src="${base_url}/assets/img/empty-cart.png" alt="empty cart" width="200" height="200">
+                                <h4 class="mb-0">Your cart is empty</h4>
+                                <p class="mb-0">Want something? Add it to your cart now!</p>
+                                <a href="${base_url}/shop" class="btn btn-primary px-5 py-2">Shop Now</a>
+                            </div>`;
+                    }
+
+                    $('#cart-dropdown').html(cartDropdownHtml);
+                    $('#cart-total').text(response.cartTotal);
+                    $('.cart-total').text(response.cartTotal);
                 } else {
                     Toast.fire({
                         icon: "error",
-                        title: "Failed to add item to cart"
+                        title: response.error
                     });
                 }
             },
@@ -239,46 +270,48 @@
         });
     });
 
-    // $(document).ready(function() {
-    //     $('.addCart').submit(function(e) {
-    //         e.preventDefault();
-    //         const formData = new FormData(this);
+    $('.addFavorite').click(function(e) {
+        const button = $(this);
+        e.preventDefault();
+        const menuId = $('#menu_id').val();
+        const userId = $('#user_id').val();
+        const price = $('#price').val();
+        const quantity = 1;
 
-    //         $.ajax({
-    //             url: $(this).attr('action'),
-    //             type: 'POST',
-    //             data: formData,
-    //             dataType: 'json',
-    //             processData: false,
-    //             contentType: false,
-    //             beforeSend: function() {
-    //                 $('.addButton').attr('disabled', 'disabled');
-    //                 $('.addButton').html('<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span role="status">Loading...</span>');
-    //             },
-    //             complete: function() {
-    //                 $('.addButton').removeAttr('disabled', 'disabled');
-    //                 $('.addButton').html('Add To Cart');
-    //             },
-    //             success: function(response) {
-    //                 if (response.error) {
-    //                     Toast.fire({
-    //                         icon: "error",
-    //                         title: response.message
-    //                     });
-    //                 } else {
-    //                     Toast.fire({
-    //                         icon: "success",
-    //                         title: response.message
-    //                     });
-    //                 }
-    //                 window.location.href = document.referrer
-    //             },
-    //             error: function(xhr, ajaxOptions, thrownError) {
-    //                 console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-    //             }
-    //         });
-    //     });
-    // });
+        $.ajax({
+            url: '<?= base_url('cart/add') ?>',
+            type: 'POST',
+            data: {
+                type: 'Favorite',
+                menu_id: menuId,
+                user_id: userId,
+                quantity: quantity,
+                price: price
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    if (response.favorite == 'added') {
+                        button.addClass('text-danger');
+                    } else {
+                        button.removeClass('text-danger');
+                    }
+
+                    Toast.fire({
+                        icon: "success",
+                        title: response.success
+                    });
+                } else {
+                    Toast.fire({
+                        icon: "error",
+                        title: response.error
+                    });
+                }
+            },
+            error: function(xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    });
 </script>
-
 <?= $this->endSection(); ?>

@@ -107,33 +107,33 @@
         <div class="tab-class text-center">
             <div class="row g-4">
                 <div class="col-lg-4 text-start">
-                    <h1>Our Organic Products</h1>
+                    <h1>Our Delicious Menus</h1>
                 </div>
                 <div class="col-lg-8 text-end">
                     <ul class="nav nav-pills d-inline-flex text-center mb-5">
                         <li class="nav-item">
                             <a class="d-flex m-2 py-2 bg-light rounded-pill active" data-bs-toggle="pill" href="#tab-1">
-                                <span class="text-dark" style="width: 130px;">All Products</span>
+                                <span class="text-dark" style="width: 130px;">All Menus</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="d-flex py-2 m-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-2">
-                                <span class="text-dark" style="width: 130px;">Vegetables</span>
+                                <span class="text-dark" style="width: 130px;">Foods</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-3">
-                                <span class="text-dark" style="width: 130px;">Fruits</span>
+                                <span class="text-dark" style="width: 130px;">Drinks</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-4">
-                                <span class="text-dark" style="width: 130px;">Bread</span>
+                                <span class="text-dark" style="width: 130px;">Snacks</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-5">
-                                <span class="text-dark" style="width: 130px;">Meat</span>
+                                <span class="text-dark" style="width: 130px;">Desserts</span>
                             </a>
                         </li>
                     </ul>
@@ -349,55 +349,6 @@
 <!-- Fruits Shop End-->
 
 
-<!-- Featurs Start -->
-<div class="container-fluid service py-5">
-    <div class="container py-5">
-        <div class="row g-4 justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <a href="#">
-                    <div class="service-item bg-secondary rounded border border-secondary">
-                        <img src="<?= base_url('assets/'); ?>img/featur-1.jpg" class="img-fluid rounded-top w-100" alt="">
-                        <div class="px-4 rounded-bottom">
-                            <div class="service-content bg-primary text-center p-4 rounded">
-                                <h5 class="text-white">Fresh Apples</h5>
-                                <h3 class="mb-0">20% OFF</h3>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <a href="#">
-                    <div class="service-item bg-dark rounded border border-dark">
-                        <img src="<?= base_url('assets/'); ?>img/featur-2.jpg" class="img-fluid rounded-top w-100" alt="">
-                        <div class="px-4 rounded-bottom">
-                            <div class="service-content bg-light text-center p-4 rounded">
-                                <h5 class="text-primary">Tasty Fruits</h5>
-                                <h3 class="mb-0">Free delivery</h3>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <a href="#">
-                    <div class="service-item bg-primary rounded border border-primary">
-                        <img src="<?= base_url('assets/'); ?>img/featur-3.jpg" class="img-fluid rounded-top w-100" alt="">
-                        <div class="px-4 rounded-bottom">
-                            <div class="service-content bg-secondary text-center p-4 rounded">
-                                <h5 class="text-white">Exotic Vegitable</h5>
-                                <h3 class="mb-0">Discount 30$</h3>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Featurs End -->
-
-
 <!-- Banner Section Start-->
 <div class="container-fluid banner bg-secondary my-5">
     <div class="container py-5">
@@ -509,8 +460,8 @@
 <div class="container-fluid testimonial py-5">
     <div class="container py-5">
         <div class="testimonial-header text-center">
-            <h4 class="text-primary">Our Testimonial</h4>
-            <h1 class="display-5 mb-5 text-dark">Our Client Saying!</h1>
+            <h4 class="text-primary">Our Reviews</h4>
+            <h1 class="display-5 mb-5 text-dark">What Our Customer Saying!</h1>
         </div>
         <div class="owl-carousel testimonial-carousel">
             <div class="testimonial-item img-border-radius bg-light rounded p-4">

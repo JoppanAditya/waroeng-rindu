@@ -53,8 +53,9 @@
                     <label for="notes">Notes for Courier</label>
                     <div class="invalid-feedback error-notes"></div>
                 </div>
-
-                <button type="submit" class="btn btn-primary saveButton">Add Address</button>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary saveButton px-3">Add Address</button>
             </div>
             <?= form_close(); ?>
         </div>
@@ -184,6 +185,7 @@
                             title: response.message
                         });
                         $('#addModal').modal('hide');
+                        addressData();
                     }
                 },
                 error: function(xhr, ajaxOptions, thrownError) {

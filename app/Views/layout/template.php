@@ -49,11 +49,11 @@
     <?php endif; ?>
     <!-- Flashdata End -->
 
-    <?= $title != 'Transaction' ? view('layout/navbar') : ''; ?>
+    <?= $title != 'Transaction' ? $this->include('layout/navbar') : ''; ?>
 
     <?= $this->renderSection('content') ?>
 
-    <?= $title != 'Transaction' ? view('layout/footer') : ''; ?>
+    <?= $title != 'Transaction' ? $this->include('layout/footer') : ''; ?>
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
@@ -69,6 +69,19 @@
 
     <!-- Template Javascript -->
     <script src="<?= base_url('assets/'); ?>js/main.js"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+    </script>
     <?= $this->renderSection('scripts'); ?>
 </body>
 

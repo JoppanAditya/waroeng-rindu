@@ -34,16 +34,18 @@
                         <div class="nav-item dropdown my-auto">
                             <a href="<?= base_url('cart'); ?>" type="button" class="nav-link position-relative dropdown-toggle">
                                 <i class="fa fa-shopping-bag fa-2x"></i>
-                                <span id="cart-total" class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; right: 8px; height: 20px; min-width: 20px;"><?= session('cartTotal'); ?></span>
+                                <?php if (!empty(session('cart'))) : ?>
+                                    <span id="cart-total" class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; right: 8px; height: 20px; min-width: 20px;"><?= session('cartTotal'); ?></span>
+                                <?php endif; ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end m-0 bg-secondary rounded-0" style="width: 500px;">
                                 <div class="dropdown-header">
-                                    <h6 class="text-dark m-0">Cart <span id="cart-total" class="text-secondary">(<?= session('cartTotal'); ?>)</span></h6>
+                                    <h6 class="text-dark m-0">Cart <span class="text-secondary cart-total">(<?= session('cartTotal'); ?>)</span></h6>
                                 </div>
                                 <hr class="dropdown-divider" />
-                                <?php if (!empty(session('cart'))) : ?>
-                                    <?php foreach (session('cart') as $c) : ?>
-                                        <?php if ($c) : ?>
+                                <div id="cart-dropdown">
+                                    <?php if (!empty(session('cart'))) : ?>
+                                        <?php foreach (session('cart') as $c) : ?>
                                             <li>
                                                 <a href=<?= base_url('shop/') . $c['slug'] ?> class="dropdown-item d-flex justify-content-between text-reset text-decoration-none">
                                                     <div class="d-flex align-items-start gap-3">
@@ -53,22 +55,20 @@
                                                     <p class="fw-semibold"><span><?= $c['quantity'] ?></span> &times; <?= number_to_currency($c['price'], 'IDR', 'id_ID'); ?></p>
                                                 </a>
                                             </li>
-                                        <?php else : ?>
-
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
-                                <?php else : ?>
-                                    <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-3">
-                                        <img src="<?= base_url('assets/') ?>img/empty-cart.png" alt="empty cart" width="200" height="200">
-                                        <h4 class="mb-0">Your cart is empty</h4>
-                                        <p class="mb-0">Want something? Add it to your cart now!</p>
-                                        <a href="<?= base_url('shop') ?>" class="btn btn-primary px-5 py-2">Shop Now</a>
-                                    </div>
-                                <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    <?php else : ?>
+                                        <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-3">
+                                            <img src="<?= base_url('assets/') ?>img/empty-cart.png" alt="empty cart" width="200" height="200">
+                                            <h4 class="mb-0">Your cart is empty</h4>
+                                            <p class="mb-0">Want something? Add it to your cart now!</p>
+                                            <a href="<?= base_url('shop') ?>" class="btn btn-primary px-5 py-2">Shop Now</a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                             </ul>
                         </div>
                         <div class="nav-item dropdown my-auto">
-                            <a href="<?= base_url('profile'); ?>" class="nav-link">
+                            <a href="<?= base_url('settings'); ?>" class="nav-link">
                                 <img class="rounded-circle ms-2" src="<?= base_url('assets/img/user/') . $user->image; ?>" alt="profile picture" width="44">
                             </a>
                             <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -76,8 +76,8 @@
                                     <a href="<?= base_url('admin/dashboard'); ?>" class="dropdown-item">Dashboard</a>
                                     <hr class="dropdown-divider" />
                                 <?php endif; ?>
-                                <a href="<?= base_url('purchase'); ?>" class="dropdown-item">Purchase</a>
-                                <a href="<?= base_url('wishlist'); ?>" class="dropdown-item">Wishlist</a>
+                                <a href="<?= base_url('order-list'); ?>" class="dropdown-item">Purchase</a>
+                                <a href="<?= base_url('favorite'); ?>" class="dropdown-item">Favorites</a>
                                 <a href="<?= base_url('settings'); ?>" class="dropdown-item">Settings</a>
                                 <hr class="dropdown-divider" />
                                 <a href="<?= base_url('logout'); ?>" class="dropdown-item">Logout</a>

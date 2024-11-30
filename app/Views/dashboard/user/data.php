@@ -23,12 +23,12 @@ if (!empty($users)): ?>
                     <td><?= $u->active; ?></td>
                     <td><?= $u->status; ?></td>
                     <td><?= $u->last_active ? Carbon::parse($u->last_active)->diffForHumans(['options' => Carbon::NO_ZERO_DIFF]) : null; ?></td>
-                    <td><?= Carbon::parse($u->created_at)->format('d/m/Y'); ?></td>
-                    <td><?= Carbon::parse($u->updated_at)->format('d/m/Y'); ?></td>
+                    <td><?= Carbon::parse($u->created_at)->format('d M Y'); ?></td>
+                    <td><?= Carbon::parse($u->updated_at)->format('d M Y'); ?></td>
                     <td>
-                        <button type="button" class="btn btn-success btn-sm" onclick="detail('<?= $u->id ?>')"><i class="ri-eye-fill"></i> Detail</button>
-                        <button type="button" class="btn btn-warning btn-sm" onclick="edit('<?= $u->id ?>')"><i class="bx bxs-edit"></i> Edit</button>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="remove('<?= $u->id ?>')"><i class="bx bxs-trash"></i> Delete</button>
+                        <button type="button" class="btn btn-success" onclick="detail('<?= $u->id ?>')"><i class="ri-eye-fill"></i></button>
+                        <button type="button" class="btn btn-warning" onclick="edit('<?= $u->id ?>')"><i class="bx bxs-edit"></i></button>
+                        <button type="button" class="btn btn-danger" onclick="remove('<?= $u->id ?>')"><i class="bx bxs-trash"></i></button>
                     </td>
                 </tr>
             <?php endforeach; ?>

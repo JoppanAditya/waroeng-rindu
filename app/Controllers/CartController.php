@@ -44,6 +44,24 @@ class CartController extends BaseController
         }
     }
 
+    public function getFavorite()
+    {
+        if ($this->request->isAJAX()) {
+            $menu = $this->cartModel->getFavoriteItems(user_id());
+
+            $data = [
+                'menus' => $menu,
+                'pager' => $this->cartModel->pager,
+            ];
+
+            return $this->response->setJSON([
+                'data' => view('settings/favoriteData', $data)
+            ]);
+        } else {
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
+        }
+    }
+
     public function getTotal()
     {
         $userId = user_id();
@@ -54,21 +72,50 @@ class CartController extends BaseController
 
     public function add()
     {
-        $userId = user_id();
-        $menuId = $this->request->getPost('menu_id');
-        $quantity = $this->request->getPost('quantity');
-        $price = $this->request->getPost('price');
-        $notes = $this->request->getPost('notes');
+        if ($this->request->isAJAX()) {
+            $userId = $this->request->getPost('user_id');
+            $menuId = $this->request->getPost('menu_id');
+            $quantity = $this->request->getPost('quantity');
+            $price = $this->request->getPost('price');
+            $notes = $this->request->getPost('notes');
+            $type = $this->request->getPost('type');
 
-        $this->cartModel->addCartItem($userId, $menuId, $quantity, $price, $notes);
+            $favoriteCheck = $this->cartModel->checkFavorite($userId, $menuId);
 
-        $cartItems = $this->cartModel->getCartItems($userId);
-        $cartTotal = count($cartItems);
+            if ($type == 'Shopping' || ($type == 'Favorite' && !$favoriteCheck)) {
+                $added = $this->cartModel->addCartItem($type, $userId, $menuId, $quantity, $price, $notes);
+                $cartItems = $this->cartModel->getCartItems($userId);
+                $cartTotal = count($cartItems);
 
-        session()->set('cart', $cartItems);
-        session()->set('cartTotal', $cartTotal);
+                session()->set('cart', $cartItems);
+                session()->set('cartTotal', $cartTotal);
 
-        return redirect()->back()->with('success', 'Successfully added menu to cart.');
+                $response = [
+                    'cart' => $cartItems,
+                    'cartTotal' => $cartTotal,
+                ];
+
+                if ($added && $type == 'Shopping') {
+                    $response['success'] = 'Successfully added menu to cart.';
+                } elseif ($added && $type == 'Favorite') {
+                    $response['favorite'] = 'added';
+                    $response['success'] = 'Successfully added menu to favorite.';
+                } else {
+                    return $this->response->setJSON(['error' => 'Failed to add menu to cart.']);
+                }
+
+                return $this->response->setJSON($response);
+            } elseif ($favoriteCheck) {
+                $this->cartModel->deleteCart($type, $userId);
+                return $this->response->setJSON([
+                    'favorite' => 'removed',
+                    'success' => 'Menu has been removed from favorite.'
+                ]);
+            }
+            return $this->response->setJSON(['error' => 'Failed to add menu to cart or favorite.']);
+        } else {
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
+        }
     }
 
     public function update()
@@ -85,11 +132,19 @@ class CartController extends BaseController
 
             $updated = $this->cartModel->updateCartItem($id, $quantity, $notes);
 
+            $cartItems = $this->cartModel->getCartItems(user_id());
+            $cartTotal = count($cartItems);
+
+            session()->set('cart', $cartItems);
+            session()->set('cartTotal', $cartTotal);
+
             if ($updated) {
                 return $this->response->setJSON([
                     'success' => 'Menu updated.',
                     'quantity' => $quantity,
-                    'notes' => $notes
+                    'notes' => $notes,
+                    'cart' => $cartItems,
+                    'cartTotal' => $cartTotal,
                 ]);
             }
             return $this->response->setJSON(['error' => 'Unable to update menu.']);
@@ -101,11 +156,22 @@ class CartController extends BaseController
     public function remove()
     {
         if ($this->request->isAJAX()) {
-            $id = $this->request->getPost('id');
-            $deleted = $this->cartModel->deleteCart(user_id(), $id);
+            $menuId = $this->request->getPost('menu_id');
+            $userId = $this->request->getPost('user_id');
+            $deleted = $this->cartModel->deleteCart('Shopping', $userId, $menuId);
+
+            $cartItems = $this->cartModel->getCartItems($userId);
+            $cartTotal = count($cartItems);
+
+            session()->set('cart', $cartItems);
+            session()->set('cartTotal', $cartTotal);
 
             if ($deleted) {
-                return $this->response->setJSON(['success' => 'Menu removed from cart']);
+                return $this->response->setJSON([
+                    'success' => 'Menu removed from cart',
+                    'cart' => $cartItems,
+                    'cartTotal' => $cartTotal,
+                ]);
             }
             return $this->response->setJSON(['error' => 'Unable to remove menu from cart']);
         } else {

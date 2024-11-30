@@ -41,15 +41,6 @@
 
 
   /**
-   * Sidebar toggle
-   */
-  if (select('.toggle-sidebar-btn')) {
-    on('click', '.toggle-sidebar-btn', function(e) {
-      select('body').classList.toggle('toggle-sidebar')
-    })
-  }
-
-  /**
    * Search bar toggle
    */
   if (select('.search-bar-toggle')) {
@@ -326,7 +317,7 @@
         toast: true,
         position: "top-end",
         showConfirmButton: false,
-        timer: 5000,
+        timer: 3500,
         timerProgressBar: true,
         didOpen: (toast) => {
             toast.onmouseenter = Swal.stopTimer;

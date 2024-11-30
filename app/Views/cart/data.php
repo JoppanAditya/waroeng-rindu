@@ -53,7 +53,7 @@
                                 <p class="mb-0 mt-4 fw-bold subtotal" id="subtotal-<?= $c['id']; ?>" data-subtotal="<?= $c['subtotal']; ?>"><?= number_to_currency($c['subtotal'], 'IDR', 'id_ID'); ?></p>
                             </td>
                             <td>
-                                <button onclick="remove(<?= $c['id'] ?>)" class="btn btn-md rounded-circle bg-light border mt-4">
+                                <button onclick="remove(<?= $c['menu_id'] . ',' . $c['user_id'] ?>)" class="btn btn-md rounded-circle bg-light border mt-4">
                                     <i class="fa fa-times text-danger"></i>
                                 </button>
                             </td>
@@ -64,10 +64,10 @@
             </table>
         </div>
         <div class="d-flex justify-content-between mt-5">
-            <div class="w-75">
+            <!-- <div class="w-75">
                 <input type="text" class="border-0 border-bottom rounded me-5 py-3 mb-4" placeholder="Coupon Code">
                 <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="button">Apply Coupon</button>
-            </div>
+            </div> -->
             <div class="row g-4 justify-content-end" style="width: 200rem;">
                 <div class="col-8"></div>
                 <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
@@ -97,12 +97,13 @@
 <?php endif; ?>
 
 <script>
-    function remove(id) {
+    function remove(menuId, userId) {
         $.ajax({
             url: '<?= base_url('cart/remove') ?>',
             type: 'POST',
             data: {
-                id: id,
+                menu_id: menuId,
+                user_id: userId
             },
             success: function(response) {
                 if (response.success) {
@@ -111,6 +112,43 @@
                         title: response.success
                     });
                     cartData();
+
+                    const base_url = "<?= base_url(); ?>";
+                    const cartItems = response.cart ?? 0;
+                    let cartDropdownHtml = '';
+
+                    if (cartItems.length > 0) {
+                        cartItems.forEach(item => {
+                            const price_formatted = new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                            }).format(item.price);
+
+                            cartDropdownHtml += `
+                                <li>
+                                    <a href="${base_url}/shop/${item.slug}" class="dropdown-item d-flex justify-content-between text-reset text-decoration-none">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <img src="${base_url}/assets/img/menu/${item.image}" alt="${item.name}" class="rounded img-thumbnail" width="56" height="56">
+                                            <p class="d-inline-block text-wrap text-decoration-none fw-medium" style="max-width: 250px;">${item.name}</p>
+                                        </div>
+                                        <p class="fw-semibold"><span>${item.quantity}</span> &times; ${price_formatted}</p>
+                                    </a>
+                                </li>`;
+                        });
+                    } else {
+                        cartDropdownHtml = `
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-3">
+                                <img src="${base_url}/assets/img/empty-cart.png" alt="empty cart" width="200" height="200">
+                                <h4 class="mb-0">Your cart is empty</h4>
+                                <p class="mb-0">Want something? Add it to your cart now!</p>
+                                <a href="${base_url}/shop" class="btn btn-primary px-5 py-2">Shop Now</a>
+                            </div>`;
+                    }
+
+                    $('#cart-dropdown').html(cartDropdownHtml);
+                    $('#cart-total').text(response.cartTotal);
+                    $('.cart-total').text(response.cartTotal);
                 } else {
                     Toast.fire({
                         icon: "error",
@@ -136,8 +174,6 @@
         } else if (action === 'decrement' && quantity > 1) {
             quantity -= 1;
         }
-
-        console.log(quantity);
 
         $.ajax({
             url: '<?= base_url('cart/update') ?>',
@@ -172,6 +208,43 @@
                         currency: 'IDR',
                         minimumFractionDigits: 0,
                     }).format(total));
+
+                    const base_url = "<?= base_url(); ?>";
+                    const cartItems = response.cart ?? 0;
+                    let cartDropdownHtml = '';
+
+                    if (cartItems.length > 0) {
+                        cartItems.forEach(item => {
+                            const price_formatted = new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                            }).format(item.price);
+
+                            cartDropdownHtml += `
+                                <li>
+                                    <a href="${base_url}/shop/${item.slug}" class="dropdown-item d-flex justify-content-between text-reset text-decoration-none">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <img src="${base_url}/assets/img/menu/${item.image}" alt="${item.name}" class="rounded img-thumbnail" width="56" height="56">
+                                            <p class="d-inline-block text-wrap text-decoration-none fw-medium" style="max-width: 250px;">${item.name}</p>
+                                        </div>
+                                        <p class="fw-semibold"><span>${item.quantity}</span> &times; ${price_formatted}</p>
+                                    </a>
+                                </li>`;
+                        });
+                    } else {
+                        cartDropdownHtml = `
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-3">
+                                <img src="${base_url}/assets/img/empty-cart.png" alt="empty cart" width="200" height="200">
+                                <h4 class="mb-0">Your cart is empty</h4>
+                                <p class="mb-0">Want something? Add it to your cart now!</p>
+                                <a href="${base_url}/shop" class="btn btn-primary px-5 py-2">Shop Now</a>
+                            </div>`;
+                    }
+
+                    $('#cart-dropdown').html(cartDropdownHtml);
+                    $('#cart-total').text(response.cartTotal);
+                    $('.cart-total').text(response.cartTotal);
                 } else {
                     Toast.fire({
                         icon: "error",

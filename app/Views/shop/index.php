@@ -48,69 +48,52 @@
                                 <div class="mb-3">
                                     <h4>Categories</h4>
                                     <ul class="list-unstyled fruite-categorie">
-                                        <li>
-                                            <div class="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i class="fas fa-apple-alt me-2"></i>Apples</a>
-                                                <span>(3)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i class="fas fa-apple-alt me-2"></i>Oranges</a>
-                                                <span>(5)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i class="fas fa-apple-alt me-2"></i>Strawbery</a>
-                                                <span>(2)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i class="fas fa-apple-alt me-2"></i>Banana</a>
-                                                <span>(8)</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="d-flex justify-content-between fruite-name">
-                                                <a href="#"><i class="fas fa-apple-alt me-2"></i>Pumpkin</a>
-                                                <span>(5)</span>
-                                            </div>
-                                        </li>
+                                        <?php foreach ($categories as $c): ?>
+                                            <li>
+                                                <div class="d-flex justify-content-between fruite-name">
+                                                    <a href="#"><i class="fas fa-utensils me-2"></i></i><?= $c['name']; ?></a>
+                                                </div>
+                                            </li>
+                                        <?php endforeach; ?>
                                     </ul>
                                 </div>
                             </div>
                             <div class="col-lg-12">
                                 <div class="mb-3">
                                     <h4 class="mb-2">Price</h4>
-                                    <input type="range" class="form-range w-100" id="rangeInput" name="rangeInput" min="0" max="500" value="0" oninput="amount.value=rangeInput.value">
-                                    <output id="amount" name="amount" min-velue="0" max-value="500" for="rangeInput">0</output>
+                                    <form action="<?= base_url('shop') ?>" method="get" id="filter-price">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" style="font-size: 14px">Rp</span>
+                                            <input type="text" class="form-control filter-price" placeholder="Minimum Price" aria-label="Minimum Price" name="minP" value="" style="font-size: 14px" />
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="font-size: 14px">Rp</span>
+                                            <input type="text" class="form-control filter-price" placeholder="Maximum Price" aria-label="Maximum Price" name="maxP" value="" style="font-size: 14px" />
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                             <div class="col-lg-12">
                                 <div class="mb-3">
-                                    <h4>Additional</h4>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-1" name="Categories-1" value="Beverages">
-                                        <label for="Categories-1"> Organic</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-2" name="Categories-1" value="Beverages">
-                                        <label for="Categories-2"> Fresh</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-3" name="Categories-1" value="Beverages">
-                                        <label for="Categories-3"> Sales</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-4" name="Categories-1" value="Beverages">
-                                        <label for="Categories-4"> Discount</label>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="radio" class="me-2" id="Categories-5" name="Categories-1" value="Beverages">
-                                        <label for="Categories-5"> Expired</label>
-                                    </div>
+                                    <h3 class="border-top pt-3 mt-4" style="border-color: rgba(0, 0, 0, 0.1) !important">Rating</h3>
+                                    <form action="<?= base_url('shop') ?>" method="get" id="filter-rating">
+                                        <div>
+                                            <input class="btn-check filter-rating" type="radio" name="r" id="rate4" value="4">
+                                            <label class="btn btn-outline-light border-0 text-dark" for="rate4"> <i class="fa fa-star" style="color: #ff9843"></i> 4 Keatas </label>
+                                        </div>
+                                        <div>
+                                            <input class="btn-check filter-rating" type="radio" name="r" id="rate3" value="3">
+                                            <label class="btn btn-outline-light border-0 text-dark" for="rate3"> <i class="fa fa-star" style="color: #ff9843"></i> 3 Keatas </label>
+                                        </div>
+                                        <div>
+                                            <input class="btn-check filter-rating" type="radio" name="r" id="rate2" value="2">
+                                            <label class="btn btn-outline-light border-0 text-dark" for="rate2"> <i class="fa fa-star" style="color: #ff9843"></i> 2 Keatas </label>
+                                        </div>
+                                        <div>
+                                            <input class="btn-check filter-rating" type="radio" name="r" id="rate1" value="1">
+                                            <label class="btn btn-outline-light border-0 text-dark" for="rate1"> <i class="fa fa-star" style="color: #ff9843"></i> 1 Keatas </label>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                             <div class="col-lg-12">
@@ -126,7 +109,7 @@
                     <div class="col-lg-9">
                         <div class="row g-4 justify-content-center">
 
-                            <?php foreach ($menu as $m): ?>
+                            <?php foreach ($menus as $m): ?>
                                 <div class="col-md-6 col-lg-6 col-xl-4">
                                     <a href="<?= base_url('shop/' . $m['slug']); ?>">
                                         <div class="rounded position-relative fruite-item">
@@ -145,11 +128,12 @@
                                                     <?php if (!auth()->loggedIn()) : ?>
                                                         <a href="<?= base_url('login') ?>" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
                                                     <?php else : ?>
+                                                        <input type="hidden" name="type" value="Shopping">
                                                         <input type="hidden" name="menu_id" value="<?= $m['id'] ?>">
-                                                        <input type="hidden" name="quantity" value="1">
                                                         <input type="hidden" name="user_id" value="<?= user_id() ?>">
+                                                        <input type="hidden" name="quantity" value="1">
                                                         <input type="hidden" name="price" value="<?= $m['price'] ?>">
-                                                        <button class="btn border border-secondary rounded-pill px-3 text-primary addButton"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</button>
+                                                        <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary addButton"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</button>
                                                     <?php endif; ?>
                                                     <?= form_close(); ?>
                                                 </div>
@@ -169,20 +153,10 @@
     </div>
 </div>
 <!-- Fruits Shop End-->
+<?= $this->endSection(); ?>
 
+<?= $this->section('scripts'); ?>
 <script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-    });
-
     $(document).ready(function() {
         $('.addCartForm').submit(function(e) {
             e.preventDefault();
@@ -192,55 +166,61 @@
                 type: 'POST',
                 data: $(this).serialize(),
                 dataType: 'json',
-                beforeSend: function() {
-                    $('.addButton').attr('disabled', 'disabled');
-                    $('.addButton').html('<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span role="status">Loading...</span>');
+                success: function(response) {
+                    if (response.success) {
+                        Toast.fire({
+                            icon: "success",
+                            title: response.success
+                        });
+
+                        const base_url = "<?= base_url(); ?>";
+                        const cartItems = response.cart;
+                        let cartDropdownHtml = '';
+
+                        if (cartItems.length > 0) {
+                            cartItems.forEach(item => {
+                                const price_formatted = new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(item.price);
+
+                                cartDropdownHtml += `
+                                <li>
+                                    <a href="${base_url}/shop/${item.slug}" class="dropdown-item d-flex justify-content-between text-reset text-decoration-none">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <img src="${base_url}/assets/img/menu/${item.image}" alt="${item.name}" class="rounded img-thumbnail" width="56" height="56">
+                                            <p class="d-inline-block text-wrap text-decoration-none fw-medium" style="max-width: 250px;">${item.name}</p>
+                                        </div>
+                                        <p class="fw-semibold"><span>${item.quantity}</span> &times; ${price_formatted}</p>
+                                    </a>
+                                </li>`;
+                            });
+                        } else {
+                            cartDropdownHtml = `
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-3">
+                                <img src="${base_url}/assets/img/empty-cart.png" alt="empty cart" width="200" height="200">
+                                <h4 class="mb-0">Your cart is empty</h4>
+                                <p class="mb-0">Want something? Add it to your cart now!</p>
+                                <a href="${base_url}/shop" class="btn btn-primary px-5 py-2">Shop Now</a>
+                            </div>`;
+                        }
+
+                        $('#cart-dropdown').html(cartDropdownHtml);
+                        $('#cart-total').text(response.cartTotal);
+                        $('.cart-total').text(response.cartTotal);
+                    } else {
+                        Toast.fire({
+                            icon: "error",
+                            title: response.error
+                        });
+                    }
                 },
-                complete: function() {
-                    $('.addButton').removeAttr('disabled', 'disabled');
-                    $('.addButton').html('Add To Cart');
-                },
-                error: function(xhr) {
-                    console.error("Error:", xhr.responseText);
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
                 }
             });
         });
-
-        // $('.addCartForm').submit(function(e) {
-        //     e.preventDefault();
-
-        //     $.ajax({
-        //         url: $(this).attr('action'),
-        //         type: 'POST',
-        //         data: $(this).serialize(),
-        //         dataType: 'json',
-        //         beforeSend: function() {
-        //             $('.addButton').attr('disabled', 'disabled');
-        //             $('.addButton').html('<span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span role="status">Loading...</span>');
-        //         },
-        //         complete: function() {
-        //             $('.addButton').removeAttr('disabled', 'disabled');
-        //             $('.addButton').html('Add To Cart');
-        //         },
-        //         success: function(response) {
-        //             if (response.error) {
-        //                 Toast.fire({
-        //                     icon: "error",
-        //                     title: response.message
-        //                 });
-        //             } else {
-        //                 Toast.fire({
-        //                     icon: "success",
-        //                     title: response.message
-        //                 });
-        //             }
-        //             // window.location.href = document.referrer
-        //         },
-        //         error: function(xhr, ajaxOptions, thrownError) {
-        //             console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        //         }
-        //     });
-        // });
     });
 </script>
 <?= $this->endSection(); ?>

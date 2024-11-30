@@ -61,7 +61,7 @@ class TransactionController extends BaseController
 
         $users = auth()->getProvider();
         $user = $users->findById($data['user_id']);
-        $addresses = $this->addressModel->getAddressDetail(user_id());
+        $address = $this->addressModel->getSelected($data['user_id']);
 
         Midtrans\Config::$serverKey = getenv('MIDTRANS_SERVER_KEY');
         Midtrans\Config::$isProduction = false;
@@ -101,6 +101,15 @@ class TransactionController extends BaseController
             'name' => 'Service Fee'
         ];
 
+        $params['customer_details']['shipping_address'] = [
+            'first_name' => $address['name'],
+            'phone' => $address['phone'],
+            'address' => $address['full_address'],
+            'city' => $address['city_name'] . ', ' . $address['province_name'],
+            'postal_code' => $address['postal_code'],
+            'country_code' => 'IDN'
+        ];
+
         $snapToken = Midtrans\Snap::getSnapToken($params);
 
         if ($snapToken) {
@@ -138,7 +147,7 @@ class TransactionController extends BaseController
 
             if ($added && $detailAdded) {
                 if ($status == 'capture' || $status == 'settlement' || $status == 'pending') {
-                    $cartModel->deleteCart($data['user_id']);
+                    $cartModel->deleteCart('Shopping', $data['user_id']);
                     return $this->response->setJSON(['success' => true]);
                 } else {
                     return $this->response->setJSON(['error' => 'Sorry, we had an issue confirming your payment']);

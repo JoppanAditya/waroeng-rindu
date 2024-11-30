@@ -163,6 +163,7 @@
                             title: response.message
                         });
                         $('#updateModal').modal('hide');
+                        addressData();
                     }
                 },
                 error: function(xhr, ajaxOptions, thrownError) {

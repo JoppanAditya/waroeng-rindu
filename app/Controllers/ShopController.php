@@ -7,6 +7,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\MenuModel;
 use App\Models\ReviewModel;
 use App\Models\CartModel;
+use App\Models\CategoryModel;
 
 class ShopController extends BaseController
 {
@@ -28,6 +29,8 @@ class ShopController extends BaseController
 
     public function index()
     {
+        $categoryModel = new CategoryModel();
+
         $keyword = $this->request->getVar('keyword');
         if ($keyword) {
             $menu = $this->menuModel->search($keyword);
@@ -37,9 +40,9 @@ class ShopController extends BaseController
 
         $data = [
             'title' => 'Shop',
-            'menu' => $menu,
+            'menus' => $menu,
             'pager' => $this->menuModel->pager,
-            'carts' => \Config\Services::cart(),
+            'categories' => $categoryModel->get(),
         ];
 
         if (auth()->loggedIn()) {
@@ -51,11 +54,12 @@ class ShopController extends BaseController
 
     public function detail($slug)
     {
-        $menu = $this->menuModel->get($slug, 9, false);
-        $related = $this->menuModel->get(false, 8, false);
+        $menu = $this->menuModel->get($slug);
+        $related = $this->menuModel->get(false, 8);
         $review = $this->reviewModel->get($menu['id']);
         $comments = [];
         $replies = [];
+        $favorite = $this->cartModel->checkFavorite(user_id(), $menu['id']);
 
         foreach ($review as $r) {
             if ($r['parent_id'] == 0) {
@@ -71,7 +75,7 @@ class ShopController extends BaseController
             'related' => $related,
             'comment' => $comments,
             'reply' => $replies,
-            'carts' => \Config\Services::cart(),
+            'favorite' => $favorite
         ];
 
         if (auth()->loggedIn()) {

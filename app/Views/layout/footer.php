@@ -74,7 +74,7 @@
                 <span class="text-light"><i class="fas fa-copyright text-light me-2"></i><?= date("Y"); ?> <a href="<?= base_url(); ?>" class="text-secondary border-bottom">Waroeng Rindu</a>, All right reserved.</span>
             </div>
             <div class="col-md-6 my-auto text-center text-md-end text-white">
-                Designed By <a class="border-bottom text-secondary" href="https://htmlcodex.com">HTML Codex</a> Distributed By <a class="border-bottom text-secondary" href="https://themewagon.com">ThemeWagon</a>
+                Designed By <a class="border-bottom text-secondary" href="https://htmlcodex.com" target="_blank">HTML Codex</a> Distributed By <a class="border-bottom text-secondary" href="https://themewagon.com" target="_blank">ThemeWagon</a>
             </div>
         </div>
     </div>

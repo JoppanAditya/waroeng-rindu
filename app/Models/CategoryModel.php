@@ -14,6 +14,6 @@ class CategoryModel extends Model
 
     public function get()
     {
-        return $this->table($this->table)->findAll();
+        return $this->findAll();
     }
 }

@@ -8,19 +8,17 @@ use CodeIgniter\Exceptions\PageNotFoundException;
 
 class RajaOngkir extends BaseController
 {
-    private $api_key;
+    protected $api_key;
     protected $client;
-    protected $url;
     protected $options;
 
     public function __construct()
     {
-        $api_key = getenv('RAJAONGKIR_API_KEY');
+        $this->api_key = getenv('RAJAONGKIR_API_KEY');
         $this->client = service('curlrequest');
-        $this->url = 'https://api.rajaongkir.com/starter/';
         $this->options = [
             'headers' => [
-                'key' => $api_key
+                'key' => getenv('RAJAONGKIR_API_KEY')
             ],
             'verify' => false,
         ];
@@ -30,8 +28,7 @@ class RajaOngkir extends BaseController
     {
         if ($this->request->isAJAX()) {
             try {
-                $url = $this->url . 'province';
-                $response = $this->client->request('GET', $url, $this->options);
+                $response = $this->client->request('GET', 'https://api.rajaongkir.com/starter/province', $this->options);
 
                 $statusCode = $response->getStatusCode();
                 if ($statusCode === 200) {
@@ -46,7 +43,7 @@ class RajaOngkir extends BaseController
                 $errorText = isset($parts[1]) ? trim($parts[1]) : '';
 
                 $errorText = preg_replace('/\s*:\s*\d+/', '', $errorText);
-                throw new PageNotFoundException($errorText);
+                throw new \Exception($errorText);
             }
         } else {
             throw new PageNotFoundException('Sorry, we cannot access the requested page.');
@@ -59,12 +56,11 @@ class RajaOngkir extends BaseController
             try {
                 $provinceId = $this->request->getGet('province_id');
 
-                $url = $this->url . 'city';
                 if ($provinceId) {
                     $this->options['query']['province'] = $provinceId;
                 }
 
-                $response = $this->client->request('GET', $url, $this->options);
+                $response = $this->client->request('GET', 'https://api.rajaongkir.com/starter/city', $this->options);
 
                 $statusCode = $response->getStatusCode();
                 if ($statusCode === 200) {
@@ -79,7 +75,7 @@ class RajaOngkir extends BaseController
                 $errorText = isset($parts[1]) ? trim($parts[1]) : '';
 
                 $errorText = preg_replace('/\s*:\s*\d+/', '', $errorText);
-                throw new PageNotFoundException($errorText);
+                throw new \Exception($errorText);
             }
         } else {
             throw new PageNotFoundException('Sorry, we cannot access the requested page.');
@@ -93,9 +89,8 @@ class RajaOngkir extends BaseController
         $weight = $this->request->getPost('weight');
         $courier = $this->request->getPost('courier');
 
-        $url = $this->url . 'cost';
         $this->options['headers'] = [
-            'key' => getenv('RAJAONGKIR_API_KEY'),
+            'key' => $this->api_key,
             'content-type' => 'application/x-www-form-urlencoded'
         ];
         $this->options['form_params'] = [
@@ -105,7 +100,7 @@ class RajaOngkir extends BaseController
             'courier' => $courier
         ];
 
-        $response = $this->client->request('POST', $url, $this->options);
+        $response = $this->client->request('POST', 'https://api.rajaongkir.com/starter/cost', $this->options);
         $result = json_decode($response->getBody(), true);
         $services = $result['rajaongkir']['results'][0]['costs'];
 
@@ -125,9 +120,8 @@ class RajaOngkir extends BaseController
     public function getProvinceName($provinceId)
     {
         try {
-            $url = $this->url . 'province';
             $this->options['query']['id'] = $provinceId;
-            $response = $this->client->request('GET', $url, $this->options);
+            $response = $this->client->request('GET', 'https://api.rajaongkir.com/starter/province', $this->options);
 
             $result = json_decode($response->getBody(), true);
             return $result['rajaongkir']['results']['province'] ?? 'Unknown Province';
@@ -137,16 +131,15 @@ class RajaOngkir extends BaseController
             $errorText = isset($parts[1]) ? trim($parts[1]) : '';
 
             $errorText = preg_replace('/\s*:\s*\d+/', '', $errorText);
-            throw new PageNotFoundException($errorText);
+            throw new \Exception($errorText);
         }
     }
 
     public function getCityName($cityId, $provinceId)
     {
         try {
-            $url = $this->url . 'city';
             $this->options['query'] = ['id' => $cityId, 'province' => $provinceId];
-            $response = $this->client->request('GET', $url, $this->options);
+            $response = $this->client->request('GET', 'https://api.rajaongkir.com/starter/city', $this->options);
 
             $result = json_decode($response->getBody(), true);
             $cityName = $result['rajaongkir']['results']['city_name'] ?? 'Unknown City';
@@ -159,7 +152,7 @@ class RajaOngkir extends BaseController
             $errorText = isset($parts[1]) ? trim($parts[1]) : '';
 
             $errorText = preg_replace('/\s*:\s*\d+/', '', $errorText);
-            throw new PageNotFoundException($errorText);
+            throw new \Exception($errorText);
         }
     }
 }

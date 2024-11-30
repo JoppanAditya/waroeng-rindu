@@ -27,7 +27,7 @@ class AddAttrToUser extends Migration
             'fullname' => ['type' => 'VARCHAR', 'constraint' => '20', 'null' => true],
             'mobile_number' => ['type' => 'VARCHAR', 'constraint' => '15', 'null' => true],
             'date_of_birth' => ['type' => 'DATE', 'null' => true],
-            'gender' => ['type' => 'VARCHAR', 'constraint' => '6', 'null' => true],
+            'gender' => ['type' => 'ENUM', 'constraint' => ['Male, Female'], 'null' => true],
             'image' => ['type' => 'VARCHAR',  'constraint' => '255',   'default' => 'default.jpg'],
         ];
         $this->forge->addColumn($this->tables['users'], $fields);

@@ -14,25 +14,30 @@ class Cart extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
+            'type' => [
+                'type'       => 'ENUM',
+                'constraint' => ['Shopping', 'Wishlist'],
+                'default'    => 'Shopping',
+            ],
             'menu_id' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
+                'type'      => 'INT',
+                'unsigned'  => true,
             ],
             'user_id' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
+                'type'      => 'INT',
+                'unsigned'  => true,
             ],
             'quantity' => [
-                'type'           => 'INT',
-                'unsigned'       => true,
+                'type'      => 'INT',
+                'unsigned'  => true,
             ],
             'price' => [
-                'type'           => 'FLOAT',
-                'unsigned'       => true,
+                'type'      => 'FLOAT',
+                'unsigned'  => true,
             ],
             'subtotal' => [
-                'type'           => 'FLOAT',
-                'unsigned'       => true,
+                'type'      => 'FLOAT',
+                'unsigned'  => true,
             ],
             'notes' => [
                 'type'       => 'VARCHAR',

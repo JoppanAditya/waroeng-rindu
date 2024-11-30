@@ -270,6 +270,82 @@ class AdminAdminController extends BaseController
         }
     }
 
+    public function updatePassword()
+    {
+        if ($this->request->isAJAX()) {
+            $id = $this->request->getPost('id');
+            $users = auth()->getProvider();
+            $user = $users->findById($id);
+            $password = $this->request->getPost('password');
+
+            $result = auth()->check([
+                'email'    => auth()->user()->email,
+                'password' => $password,
+            ]);
+
+            if (!$result->isOK()) {
+                return $this->response->setJSON([
+                    'error' => true,
+                    'message' => 'The current password is incorrect.',
+                ]);
+            }
+
+            $validationRules = [
+                'password' => [
+                    'label' => 'Password',
+                    'rules' => 'required'
+                ],
+                'newPassword' => [
+                    'label' => 'New Password',
+                    'rules' => [
+                        'required',
+                        'max_byte[72]',
+                    ],
+                    'errors' => [
+                        'max_byte' => 'Auth.errorPasswordTooLongBytes'
+                    ]
+                ],
+                'renewPassword' => [
+                    'label' => 'New Password',
+                    'rules' => [
+                        'required',
+                        'matches[newPassword]',
+                    ],
+                    'errors' => [
+                        'matches' => 'This field does not match the New Password field.'
+                    ]
+                ]
+            ];
+
+            if (!$this->validate($validationRules)) {
+                return $this->response->setJSON([
+                    'error' => true,
+                    'message' => 'Please correct the errors in the form.',
+                    'errors' => $this->validator->getErrors(),
+                ]);
+            }
+            $newPassword = $this->request->getPost('newPassword');
+
+            $user->fill([
+                'password'      => $newPassword,
+            ]);
+
+            if ($users->save($user)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Admin has been updated successfully.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'error' => true,
+                    'message' => 'Failed to update admin.'
+                ]);
+            }
+        } else {
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
+        }
+    }
+
     public function delete()
     {
         if ($this->request->isAJAX()) {

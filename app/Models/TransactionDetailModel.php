@@ -36,4 +36,10 @@ class TransactionDetailModel extends Model
 
         return $results;
     }
+
+    public function getById($transId)
+    {
+        return $this->where('transaction_id', $transId)
+            ->findAll();
+    }
 }

@@ -9,19 +9,34 @@ class CartModel extends Model
     protected $table            = 'cart';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $allowedFields = ['menu_id', 'user_id', 'quantity', 'price', 'subtotal', 'notes'];
+    protected $allowedFields = ['type', 'menu_id', 'user_id', 'quantity', 'price', 'subtotal', 'notes'];
+
+    public function checkFavorite($userId, $menuId)
+    {
+        return $this->where(['user_id' => $userId, 'type' => 'Favorite', 'menu_id' => $menuId])->first();
+    }
 
     public function getCartItems($userId)
     {
         return $this->select('cart.*, menus.slug, menus.image, menus.name, menus.weight')
             ->join('menus', 'menus.id = cart.menu_id')
-            ->where('cart.user_id', $userId)
+            ->where(['cart.user_id' => $userId, 'cart.type' => 'Shopping'])
             ->findAll();
     }
 
-    public function addCartItem($userId, $menuId, $quantity, $price, $notes = null)
+    public function getFavoriteItems($userId)
+    {
+        return $this->select('cart.*, menus.slug, menus.image, menus.name, menus.weight, menus.description, c.name as category_name')
+            ->join('menus', 'menus.id = cart.menu_id')
+            ->join('menu_categories c', 'c.id = menus.category_id')
+            ->where(['cart.user_id' => $userId, 'cart.type' => 'Favorite'])
+            ->paginate(9, 'favorites');
+    }
+
+    public function addCartItem($type, $userId, $menuId, $quantity, $price, $notes = null)
     {
         $item = $this->where([
+            'type' => $type,
             'user_id' => $userId,
             'menu_id' => $menuId,
             'notes' => $notes,
@@ -37,6 +52,7 @@ class CartModel extends Model
             ]);
         } else {
             return $this->insert([
+                'type' => $type,
                 'user_id' => $userId,
                 'menu_id' => $menuId,
                 'quantity' => $quantity,
@@ -61,12 +77,14 @@ class CartModel extends Model
         }
     }
 
-    public function deleteCart($userId, $menuId = null)
+    public function deleteCart($type, $userId, $menuId = null)
     {
         if ($menuId !== null) {
             $this->where('menu_id', $menuId);
         }
-        $this->where('user_id', $userId)
-            ->delete();
+        return $this->where([
+            'type' => $type,
+            'user_id' => $userId
+        ])->delete();
     }
 }

@@ -14,8 +14,8 @@
                     <td><?= ++$index; ?></td>
                     <td><?= $c['name']; ?></td>
                     <td>
-                        <button type="button" class="btn btn-warning btn-sm" onclick="edit('<?= $c['id'] ?>')"><i class="bx bxs-edit"></i> Edit</button>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="remove('<?= $c['id'] ?>')"><i class="bx bxs-trash"></i> Delete</button>
+                        <button type="button" class="btn btn-warning" onclick="edit('<?= $c['id'] ?>')"><i class="bx bxs-edit"></i></button>
+                        <button type="button" class="btn btn-danger" onclick="remove('<?= $c['id'] ?>')"><i class="bx bxs-trash"></i></button>
                     </td>
                 </tr>
             <?php endforeach; ?>

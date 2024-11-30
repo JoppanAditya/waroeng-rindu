@@ -24,12 +24,22 @@ class AddressModel extends Model
         $rajaongkir = new RajaOngkir();
         $addresses = $this->get($userId);
 
-        foreach ($addresses as &$address) {
-            $address['province_name'] = $rajaongkir->getProvinceName($address['province']);
-            $address['city_name'] = $rajaongkir->getCityName($address['city'], $address['province']);
+        foreach ($addresses as $index => $address) {
+            $addresses[$index]['province_name'] = $rajaongkir->getProvinceName($address['province']);
+            $addresses[$index]['city_name'] = $rajaongkir->getCityName($address['city'], $address['province']);
         }
-
         return $addresses;
+    }
+
+    public function getSelected($userId)
+    {
+        $rajaongkir = new RajaOngkir();
+        $address = $this->where(['user_id' => $userId, 'is_selected' => 1])->first();
+
+        $address['province_name'] = $rajaongkir->getProvinceName($address['province']);
+        $address['city_name'] = $rajaongkir->getCityName($address['city'], $address['province']);
+
+        return $address;
     }
 
     public function resetSelected($userId)

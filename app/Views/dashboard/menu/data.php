@@ -29,9 +29,9 @@
                         </div>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-success btn-sm" onclick="detail('<?= $m['id'] ?>')"><i class="ri-eye-fill"></i> Detail</button>
-                        <button type="button" class="btn btn-warning btn-sm" onclick="edit('<?= $m['id'] ?>')"><i class="bx bxs-edit"></i> Edit</button>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="remove('<?= $m['id'] ?>')"><i class="bx bxs-trash"></i> Delete</button>
+                        <button type="button" class="btn btn-success" onclick="detail('<?= $m['id'] ?>')"><i class="ri-eye-fill"></i></button>
+                        <button type="button" class="btn btn-warning" onclick="edit('<?= $m['id'] ?>')"><i class="bx bxs-edit"></i></button>
+                        <button type="button" class="btn btn-danger" onclick="remove('<?= $m['id'] ?>')"><i class="bx bxs-trash"></i></button>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -61,7 +61,7 @@
                 }
             },
             error: function(xhr, ajaxOptions, thrownError) {
-                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             }
         });
     }
@@ -81,7 +81,7 @@
                 }
             },
             error: function(xhr, ajaxOptions, thrownError) {
-                alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
             }
         });
     }
@@ -125,7 +125,7 @@
                         }
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
-                        alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                        console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
                     }
                 });
             }

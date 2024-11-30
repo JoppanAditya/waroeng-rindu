@@ -26,6 +26,14 @@ class TransacionDetails extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '128',
             ],
+            'slug' => [
+                'type'           => 'VARCHAR',
+                'constraint'     => '255',
+            ],
+            'menu_image' => [
+                'type'           => 'VARCHAR',
+                'constraint'     => '255',
+            ],
             'menu_price' => [
                 'type'      => 'FLOAT',
                 'unsigned'  => true,

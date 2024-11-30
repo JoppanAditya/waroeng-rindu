@@ -20,7 +20,7 @@ class MenuModel extends Model
     {
         if ($slug) {
             $query = $this->table($this->table)
-                ->select('menus.*, mc.name as category_name')
+                ->select('menus.*, mc.name as category_name, mc.id as category_id')
                 ->join('menu_categories mc', 'mc.id = menus.category_id')
                 ->where('slug', $slug)
                 ->first();

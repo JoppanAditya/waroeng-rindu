@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\MenuModel;
-use App\Models\CartModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class HomeController extends BaseController
@@ -26,7 +25,6 @@ class HomeController extends BaseController
         $data = [
             'title' => 'Home',
             'user' => $this->user,
-            'carts' => \Config\Services::cart(),
             'menu'  => $menuModel->get(false, 8, false),
             'bestseller'  => $menuModel->get(false, 6, false),
         ];
@@ -39,7 +37,6 @@ class HomeController extends BaseController
         $data = [
             'title' => 'Contact Us',
             'user' => $this->user,
-            'carts' => \Config\Services::cart(),
         ];
 
         return view('contact', $data);
@@ -75,7 +72,7 @@ class HomeController extends BaseController
         if ($emailService->send()) {
             return redirect()->back()->with('success', 'Your message has been sent successfully!');
         } else {
-            return redirect()->back()->with('error', 'ailed to send your message. Please try again later.');
+            return redirect()->back()->with('error', 'Failed to send your message. Please try again later.');
         }
     }
 }

@@ -66,8 +66,25 @@
     <script src="<?= base_url('assets/'); ?>vendor/php-email-form/validate.js"></script>
 
     <!-- Template Main JS File -->
-    <script src="<?= base_url('assets/'); ?>js/dashboard-main.js"></script>
+    <script>
+        $('.toggle-sidebar-btn').click(function() {
+            document.body.classList.toggle('toggle-sidebar');
+        })
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+    </script>
     <?= $this->renderSection('scripts'); ?>
+    <script src="<?= base_url('assets/'); ?>js/dashboard-main.js"></script>
 
 </body>
 
