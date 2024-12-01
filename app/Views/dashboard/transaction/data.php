@@ -20,22 +20,24 @@ if (!empty($transactions)): ?>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($transactions as $item): ?>
+            <?php
+            foreach ($transactions as $item):
+                $status = strtolower($item['status']);
+                if (strpos($status, 'finish') !== false) {
+                    $bg_color = 'text-bg-success';
+                } elseif (strpos($status, 'cancel') !== false || strpos($status, 'fail') !== false) {
+                    $bg_color = 'text-bg-danger';
+                } else {
+                    $bg_color = 'text-bg-warning';
+                }
+            ?>
                 <tr>
                     <td><?= $item['id']; ?></td>
                     <td><?= number_to_currency($item['total_price'], 'IDR', 'id_ID'); ?></td>
                     <td><?= strtoupper($item['courier']) . ' - ' . $item['courier_service']; ?></td>
-                    <td><?= $item['payment_method']; ?></td>
-                    <td>
-                        <?php if (strpos(strtolower($item['status']), 'finish') !== false): ?>
-                            <p class="badge text-bg-success"><?= $item['status']; ?></p>
-                        <?php elseif (strpos(strtolower($item['status']), 'cancel') !== false || strpos(strtolower($item['status']), 'fail') !== false): ?>
-                            <p class="badge text-bg-danger"><?= $item['status']; ?></p>
-                        <?php else: ?>
-                            <p class="badge text-bg-warning"><?= $item['status']; ?></p>
-                        <?php endif; ?>
-                    </td>
-                    <td><?= $item['invoice']; ?></td>
+                    <td><?= strtoupper(str_replace('_', ' ', $item['payment_method'])); ?></td>
+                    <td><span class="badge <?= $bg_color; ?>"><?= $item['status']; ?></span></td>
+                    <td><a href="<?= base_url('invoice?id=') . urlencode($item['invoice']); ?>" target="_blank"><?= $item['invoice']; ?></a></td>
                     <td><?= Carbon::parse($item['created_at'])->format('d M Y, h:i'); ?></td>
                     <td>
                         <button type="button" class="btn btn-success" onclick="detail('<?= $item['id'] ?>')"><i class="ri-eye-fill"></i></button>

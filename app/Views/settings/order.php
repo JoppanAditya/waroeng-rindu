@@ -41,10 +41,13 @@ foreach ($transactions as $t) :
             </div>
             <div class="d-flex gap-2 justify-content-end">
                 <button type="button" class="btn btn-link btn">View Order Details</button>
-                <?php if ($t['status'] == 'Finished'): ?>
-                    <button type="button" class="btn btn-primary">Buy Again</button>
+                <?php if ($t['status'] == 'Finished' && $t['is_reviewed'] == 0): ?>
+                    <button type="button" class="btn btn-outline-primary finish-order" data-id="<?= $t['id']; ?>">Write Review</button>
+                <?php endif;
+                if ($t['status'] == 'Finished'): ?>
+                    <button type="button" class="btn btn-primary buy-again">Buy Again</button>
                 <?php elseif ($t['status'] == 'Arrive at Destination'): ?>
-                    <button type="button" class="btn btn-primary">Finish Order</button>
+                    <button type="button" class="btn btn-primary finish-order" data-id="<?= $t['id']; ?>">Finish Order</button>
                 <?php endif ?>
             </div>
         </div>
@@ -54,6 +57,46 @@ foreach ($transactions as $t) :
 
 <?= $this->section('scripts'); ?>
 <script>
+    $('.finish-order').on('click', function() {
+        var transactionId = $(this).data('id');
 
+        Swal.fire({
+            title: 'Is the Order Correct?',
+            text: 'Please make sure everything is correct before completing the transaction.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Complete the Order!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '<?= base_url('transaction/updateStatus'); ?>',
+                    method: 'POST',
+                    data: {
+                        transaction_id: transactionId,
+                        status: 'Finished'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Toast.fire({
+                                icon: "success",
+                                title: response.success
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Toast.fire({
+                                icon: "error",
+                                title: response.error
+                            });
+                        }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.error(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+                    }
+                });
+            }
+        });
+    });
 </script>
 <?= $this->endSection(); ?>

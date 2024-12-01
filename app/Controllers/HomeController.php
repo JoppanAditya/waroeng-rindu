@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\MenuModel;
+use App\Models\TransactionDetailModel;
+use App\Models\TransactionModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class HomeController extends BaseController
@@ -74,5 +76,21 @@ class HomeController extends BaseController
         } else {
             return redirect()->back()->with('error', 'Failed to send your message. Please try again later.');
         }
+    }
+
+    public function invoice()
+    {
+        $id = $this->request->getGet('id');
+        $transactionModel = new TransactionModel();
+        $transactionDetailModel = new TransactionDetailModel();
+
+        $transaction = $transactionModel->getByInvoice($id);
+
+        $data = [
+            'data' => $transaction,
+            'items' => $transactionDetailModel->getById($transaction['id'])
+        ];
+
+        return view('invoice/index', $data);
     }
 }

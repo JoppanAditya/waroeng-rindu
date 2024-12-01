@@ -5,7 +5,7 @@
             <div class="row g-4">
                 <div class="col-lg-3">
                     <a href="<?= base_url(); ?>">
-                        <h1 class="text-primary mb-0">Waroeng Rindu</h1>
+                        <h1 class="text-secondary mb-0">Waroeng Rindu</h1>
                     </a>
                 </div>
                 <div class="col-lg-6">
@@ -30,7 +30,7 @@
                     <h4 class="text-light mb-3">Why People Like us!</h4>
                     <p class="mb-4">typesetting, remaining essentially unchanged. It was
                         popularised in the 1960s with the like Aldus PageMaker including of Lorem Ipsum.</p>
-                    <a href="" class="btn border-secondary py-2 px-4 rounded-pill text-primary">Read More</a>
+                    <a href="javascript:void(0)" class="btn btn-outline-secondary py-2 px-4 rounded-pill">Read More</a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">

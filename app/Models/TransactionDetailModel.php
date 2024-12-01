@@ -23,6 +23,8 @@ class TransactionDetailModel extends Model
                 'transaction_id' => $transactionId,
                 'menu_id' => $item['id'],
                 'menu_name' => $item['name'],
+                'menu_image' => $item['image'],
+                'slug' => $item['slug'],
                 'menu_price' => $item['price'],
                 'quantity' => $item['quantity'],
                 'notes' => $item['notes'] ?? null
@@ -41,5 +43,15 @@ class TransactionDetailModel extends Model
     {
         return $this->where('transaction_id', $transId)
             ->findAll();
+    }
+
+    public function getTopSellingMenus($limit = 5)
+    {
+        return $this->select('menu_name, menu_image, menu_price, slug, SUM(quantity) AS total_sold')
+            ->groupBy('menu_name, menu_image, menu_price, slug')
+            ->orderBy('total_sold', 'DESC')
+            ->limit($limit)
+            ->get()
+            ->getResultArray();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Controllers\RajaOngkir;
 use CodeIgniter\Model;
 
 class TransactionModel extends Model
@@ -12,20 +13,19 @@ class TransactionModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id', 'user_id', 'address_id', 'courier', 'courier_service', 'delivery_fee', 'total_price', 'payment_method', 'status', 'invoice'];
+    protected $allowedFields    = ['id', 'user_id', 'address_id', 'courier', 'courier_service', 'delivery_fee', 'total_price', 'payment_method', 'status', 'invoice', 'is_reviewed', 'expiry_time', 'created_at'];
 
     protected bool $allowEmptyInserts = true;
 
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    public function get($userId)
-    {
-        return $this->where('user_id', $userId)->first();
-    }
+    // public function get($userId)
+    // {
+    //     return $this->where('user_id', $userId)->first();
+    // }
 
     public function getByUser($userId)
     {
@@ -44,10 +44,26 @@ class TransactionModel extends Model
 
     public function getAllData()
     {
-        return $this->select('transactions.*, addresses.*, users.*')
-            ->join('addresses', 'addresses.id = transactions.address_id')
-            ->join('users', 'users.id = transactions.user_id')
+        return $this->select('transactions.*, u.username, u.fullname, u.mobile_number AS user_phone, u.date_of_birth, u.gender, u.image, a.name AS address_name, a.label, a.city, a.province, a.postal_code, a.full_address, a.notes')
+            ->join('addresses a', 'a.id = transactions.address_id')
+            ->join('users u', 'u.id = transactions.user_id')
+            ->orderBy('transactions.created_at', 'DESC')
             ->findAll();
+    }
+
+    public function getByInvoice($invoiceId)
+    {
+        $data = $this->select('transactions.*, u.fullname, a.name AS address_name, a.phone, a.city, a.province, a.postal_code, a.full_address, a.notes')
+            ->join('addresses a', 'a.id = transactions.address_id')
+            ->join('users u', 'u.id = transactions.user_id')
+            ->where('transactions.invoice', $invoiceId)
+            ->first();
+
+        $rajaongkir = new RajaOngkir();
+        $data['province_name'] = $rajaongkir->getProvinceName($data['province']);
+        $data['city_name'] = $rajaongkir->getCityName($data['city'], $data['province']);
+
+        return $data;
     }
 
     public function getOrder($userId, $pending)
@@ -76,5 +92,22 @@ class TransactionModel extends Model
     public function updateStatus($id, $status)
     {
         return $this->update($id, ['status' => $status]);
+    }
+
+    public function getTotalRevenue()
+    {
+        return $this->selectSum('total_price', 'total_revenue')
+            ->where('status', 'Finished')
+            ->get()
+            ->getRow()
+            ->total_revenue;
+    }
+
+    public function getSalesData()
+    {
+        return $this->select("DATE(created_at) as date, COUNT(id) as sales")
+            ->groupBy("DATE(created_at)")
+            ->orderBy("date", "ASC")
+            ->findAll();
     }
 }

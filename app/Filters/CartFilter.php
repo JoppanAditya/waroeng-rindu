@@ -6,6 +6,7 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\CartModel;
+use App\Models\TransactionModel;
 
 class CartFilter implements FilterInterface
 {
@@ -32,6 +33,17 @@ class CartFilter implements FilterInterface
             $cartTotal = count($cartItems);
             session()->set('cart', $cartItems);
             session()->set('cartTotal', $cartTotal);
+
+            // Pengecekan transaksi yang sudah expired dan update statusnya
+            $transactionModel = new TransactionModel();
+            $expiredTransactions = $transactionModel->where('expiry_time <', date('Y-m-d H:i:s'))
+                ->where('status', 'Pending Payment')
+                ->findAll();
+
+            // Update status transaksi yang sudah expired
+            foreach ($expiredTransactions as $transaction) {
+                $transactionModel->update($transaction['id'], ['status' => 'Cancelled by System']);
+            }
         }
     }
 

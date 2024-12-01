@@ -130,6 +130,9 @@ class TransactionController extends BaseController
             $data = $this->request->getPost('transactionData');
             $data['id'] = $this->request->getPost('transactionId');
             $data['payment_method'] = $this->request->getPost('paymentType');
+            $data['expiry_time'] = $this->request->getPost('expiryTime');
+            $data['is_reviewed'] = 0;
+            $data['created_at'] = $this->request->getPost('transactionTime');
             $items = $this->request->getPost('transactionItems');
             $status = $this->request->getPost('transactionStatus');
 
@@ -154,6 +157,24 @@ class TransactionController extends BaseController
                 }
             } else {
                 return $this->response->setJSON(['error' => 'Unable to save transaction details.']);
+            }
+        } else {
+            throw new PageNotFoundException('Sorry, we cannot access the requested page.');
+        }
+    }
+
+    public function updateStatus()
+    {
+        if ($this->request->isAJAX()) {
+            $transactionId = $this->request->getPost('transaction_id');
+            $status = $this->request->getPost('status');
+
+            $updated = $this->transactionModel->update($transactionId, ['status' => $status]);
+
+            if ($updated) {
+                return $this->response->setJSON(['success' => 'Your order has been completed.']);
+            } else {
+                return $this->response->setJSON(['error' => 'There was an error updating the order status.']);
             }
         } else {
             throw new PageNotFoundException('Sorry, we cannot access the requested page.');

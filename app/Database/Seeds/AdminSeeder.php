@@ -15,7 +15,7 @@ class AdminSeeder extends Seeder
             [
                 'username' => 'joppan',
                 'email'    => 'akunku.rising808@passmail.net',
-                'password' => 'password123',
+                'password' => 'Waroengrindujaya1',
                 'fullname' => 'Joppan Aditya',
                 'gender'   => 'Male',
                 'image'    => 'profile-img.jpg',
@@ -24,7 +24,7 @@ class AdminSeeder extends Seeder
             [
                 'username' => 'sulfia',
                 'email'    => 'sulfia@mail.com',
-                'password' => 'password123',
+                'password' => 'Waroengrindujaya1',
                 'fullname' => 'Sulfia',
                 'gender'   => 'Female',
                 'image'    => 'default.jpg',
@@ -33,7 +33,7 @@ class AdminSeeder extends Seeder
             [
                 'username' => 'mimi',
                 'email'    => 'mimi@mail.com',
-                'password' => 'password123',
+                'password' => 'Waroengrindujaya1',
                 'fullname' => 'Mimi Sinaga',
                 'gender'   => 'Female',
                 'image'    => 'default.jpg',
@@ -42,7 +42,7 @@ class AdminSeeder extends Seeder
             [
                 'username' => 'admin',
                 'email'    => 'admin@mail.com',
-                'password' => 'password123',
+                'password' => 'Waroengrindujaya1',
                 'fullname' => 'Waroeng Rindu',
                 'gender'   => NULL,
                 'image'    => 'default.jpg',

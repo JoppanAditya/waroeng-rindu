@@ -6,8 +6,9 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'HomeController::index');
-$routes->get('/contact', 'HomeController::contact');
-$routes->post('/contact/send', 'HomeController::contactSend');
+$routes->get('invoice', 'HomeController::invoice');
+$routes->get('contact', 'HomeController::contact');
+$routes->post('contact/send', 'HomeController::contactSend');
 
 $routes->group('shop', static function ($routes) {
     $routes->match(['GET', 'POST'], '/', 'ShopController::index');
@@ -28,6 +29,7 @@ $routes->group('transaction', static function ($routes) {
     $routes->get('shipping', 'TransactionController::shipping');
     $routes->post('payment', 'TransactionController::payment');
     $routes->post('save', 'TransactionController::save');
+    $routes->post('updateStatus', 'TransactionController::updateStatus');
 });
 
 $routes->group('address', static function ($routes) {
@@ -60,6 +62,7 @@ $routes->group('settings', static function ($routes) {
 
 $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function ($routes) {
     $routes->get('dashboard', 'DashboardController::index');
+    $routes->get('reports/sales', 'DashboardController::getSalesData');
     $routes->get('profile', 'DashboardController::profile');
 
     $routes->group('menu', static function ($routes) {
@@ -106,6 +109,9 @@ $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function 
 
     $routes->group('transaction', static function ($routes) {
         $routes->get('/', 'AdminTransactionController::index');
+        $routes->get('report', 'AdminTransactionController::report');
+        $routes->get('reportPdf', 'AdminTransactionController::reportPdf');
+        $routes->get('reportExcel', 'AdminTransactionController::reportExcel');
         $routes->get('get', 'AdminTransactionController::get');
         $routes->post('getDetail', 'AdminTransactionController::getDetail');
         $routes->post('editForm', 'AdminTransactionController::editForm');

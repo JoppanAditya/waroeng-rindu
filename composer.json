@@ -15,7 +15,9 @@
         "codeigniter4/shield": "^1.1",
         "fakerphp/faker": "^1.23",
         "midtrans/midtrans-php": "^2.6",
-        "nesbot/carbon": "^3.8"
+        "nesbot/carbon": "^3.8",
+        "phpoffice/phpspreadsheet": "^3.5",
+        "tecnickcom/tcpdf": "^6.7"
     },
     "require-dev": {
         "mikey179/vfsstream": "^1.6",

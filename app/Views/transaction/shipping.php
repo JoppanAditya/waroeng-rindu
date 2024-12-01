@@ -70,6 +70,8 @@
                                     $totalWeight += $weight; ?>
                                     <input type="hidden" id="weight" value="<?= $totalWeight; ?>">
                                     <input type="hidden" name="items[<?= $index ?>][id]" value="<?= $c['menu_id'] ?>">
+                                    <input type="hidden" name="items[<?= $index ?>][image]" value="<?= $c['image'] ?>">
+                                    <input type="hidden" name="items[<?= $index ?>][slug]" value="<?= $c['slug'] ?>">
                                     <input type="hidden" name="items[<?= $index ?>][price]" value="<?= $c['price'] ?>">
                                     <input type="hidden" name="items[<?= $index ?>][quantity]" value="<?= $c['quantity'] ?>">
                                     <input type="hidden" name="items[<?= $index ?>][name]" value="<?= $c['name'] ?>">
@@ -367,6 +369,8 @@
                                         transactionId: result.order_id,
                                         paymentType: result.payment_type,
                                         transactionStatus: result.transaction_status,
+                                        transactionTime: result.transaction_time,
+                                        expiryTime: result.expiry_time,
                                         transactionData: response.transactionData,
                                         transactionItems: response.transactionItems
                                     },

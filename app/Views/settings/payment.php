@@ -9,10 +9,15 @@ foreach ($transactions as $t) : ?>
 
     <div class="card mt-3">
         <div class="card-body text-start row" style="font-size: 14px;">
-            <div class="d-flex gap-2 align-items-center">
-                <p class="mb-0"><?= Carbon::parse($t['created_at'])->format('d M Y, h:i'); ?></p>
-                <span class="badge bg-warning text-dark"><?= $t['status']; ?></span>
-                <a href="<?= base_url('invoice?id=' . urlencode($t['invoice'])); ?>" target="blank" class="mb-0 text-decoration-none" style="color: #3468c0;"><?= $t['invoice']; ?></a>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex gap-2 align-items-center">
+                    <p class="mb-0"><?= Carbon::parse($t['created_at'])->format('d M Y, h:i'); ?></p>
+                    <span class="badge bg-warning text-dark"><?= $t['status']; ?></span>
+                    <a href="<?= base_url('invoice?id=' . urlencode($t['invoice'])); ?>" target="blank" class="mb-0 text-decoration-none" style="color: #3468c0;"><?= $t['invoice']; ?></a>
+                </div>
+                <div>
+                    <p class="mb-0">Pay Before: <span class="text-secondary"><i class="bi bi-clock me-1"></i><?= Carbon::parse($t['expiry_time'])->format('d M Y, h:i'); ?></span></p>
+                </div>
             </div>
             <div class="d-flex mt-3">
                 <img src="<?= base_url('assets/img/menu/') . $t['menu_image'] ?>" alt="<?= $t['menu_name'] ?>" class="rounded" width="75" height="75">

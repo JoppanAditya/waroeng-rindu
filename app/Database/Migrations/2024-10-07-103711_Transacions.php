@@ -49,6 +49,14 @@ class Transacions extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '50',
             ],
+            'is_reviewed' => [
+                'type'           => 'INT',
+                'constraint'     => '1',
+                'unsigned'       => true,
+            ],
+            'expiry_time' => [
+                'type' => 'DATETIME',
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
             ],

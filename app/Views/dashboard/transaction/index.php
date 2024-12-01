@@ -23,13 +23,13 @@
                                 <h5>Order List</h5>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                                <button type="button" class="btn btn-secondary printBtn"><i class="bi bi-printer"></i></button>
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-download"></i>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-2"></i>Ms. Excel</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('admin/transaction/reportPdf'); ?>"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('admin/transaction/reportExcel'); ?>"><i class="bi bi-file-earmark-excel me-2"></i>Ms. Excel</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -64,6 +64,10 @@
 
     $(document).ready(function() {
         transactionData();
+
+        $('.printBtn').click(function() {
+            window.open("<?= base_url('admin/transaction/report') ?>", "_blank");
+        });
     });
 </script>
 
