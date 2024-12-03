@@ -370,7 +370,6 @@
                                         paymentType: result.payment_type,
                                         transactionStatus: result.transaction_status,
                                         transactionTime: result.transaction_time,
-                                        expiryTime: result.expiry_time,
                                         transactionData: response.transactionData,
                                         transactionItems: response.transactionItems
                                     },
@@ -403,6 +402,7 @@
                                         transactionId: result.order_id,
                                         paymentType: result.payment_type,
                                         transactionStatus: result.transaction_status,
+                                        transactionTime: result.transaction_time,
                                         transactionData: response.transactionData,
                                         transactionItems: response.transactionItems
                                     },
@@ -429,6 +429,7 @@
                                         transactionId: result.order_id,
                                         paymentType: result.payment_type,
                                         transactionStatus: result.transaction_status,
+                                        transactionTime: result.transaction_time,
                                         transactionData: response.transactionData,
                                         transactionItems: response.transactionItems
                                     },

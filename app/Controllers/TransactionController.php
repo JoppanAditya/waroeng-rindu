@@ -130,11 +130,17 @@ class TransactionController extends BaseController
             $data = $this->request->getPost('transactionData');
             $data['id'] = $this->request->getPost('transactionId');
             $data['payment_method'] = $this->request->getPost('paymentType');
-            $data['expiry_time'] = $this->request->getPost('expiryTime');
-            $data['is_reviewed'] = 0;
             $data['created_at'] = $this->request->getPost('transactionTime');
+            $data['is_reviewed'] = 0;
             $items = $this->request->getPost('transactionItems');
             $status = $this->request->getPost('transactionStatus');
+
+            $midtransResponse = $this->_fetchExpiryTime($data['id']);
+            if ($midtransResponse && isset($midtransResponse->expiry_time)) {
+                $data['expiry_time'] = $midtransResponse->expiry_time;
+            } else {
+                return $this->response->setJSON(['error' => 'Failed to retrieve expiry time from Midtrans']);
+            }
 
             if ($status == 'capture' || $status == 'settlement') {
                 $data['status'] = 'Awaiting Confirmation';
@@ -179,5 +185,23 @@ class TransactionController extends BaseController
         } else {
             throw new PageNotFoundException('Sorry, we cannot access the requested page.');
         }
+    }
+
+    private function _fetchExpiryTime($transactionId)
+    {
+        $url = 'https://api.sandbox.midtrans.com/v2/' . $transactionId . '/status';
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/json',
+            'Authorization: ' . getenv('MINTRANS_API_KEY')
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response);
     }
 }
